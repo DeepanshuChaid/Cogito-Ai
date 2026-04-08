@@ -1,4 +1,4 @@
-module github.com/DeepanshuChaid/Cogito-Ai-Memo.git
+module cogito
 
 go 1.26.1
 
