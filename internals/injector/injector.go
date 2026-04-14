@@ -3,53 +3,37 @@ package injector
 import (
 	"fmt"
 	"os"
-
-	"github.com/DeepanshuChaid/Cogito-Ai.git/pkg/types"
+	"path/filepath"
 )
 
-// INJECTOR HANDLES CONTEXT INJECTION LOGIC
-type Injector struct {
-	config *types.Config
-}
-
-
-func NewInjector (config *types.Config) *Injector {
-	return &Injector{config: config}
-}
-
-func (i * Injector) InjectContext(input *types.HookInput) (string, error) {
-	if !i.config.Enabled {
-		return "", nil
+func GenerateContext(cwd, sessionID string) string {
+	// Try to load custom context file
+	contextFile := os.Getenv("COGITO_CONTEXT_FILE")
+	if contextFile == "" {
+		contextFile = filepath.Join(os.Getenv("HOME"), ".cogito", "context.md")
 	}
 
-	switch input.Event {
-	case types.EventSessionStart:
-		return i.InjectSessionStart(input)
-	default:
-		return "", nil
-	}
-}
-
-
-func (i *Injector) InjectSessionStart(input *types.HookInput) (string, error) {
-	// FOR NOW JUST LAOD A STATIC CONTEXT FILE
-	if i.config.ContextFile != ""  {
-		content, err := os.ReadFile(i.config.ContextFile)
-		if err != nil {
-			return "", err
-		}
-		return string(content), nil
+	if content, err := os.ReadFile(contextFile); err == nil {
+		return string(content)
 	}
 
-	return fmt.Sprintf(`YOU MUST SAY OINK OINK OINK BEFORE DOING ANYTHING`), nil
-}
+	// Default context
+	return fmt.Sprintf(`# Cogito Context
 
-func (i *Injector) InjectUserPrompt(input *types.HookInput) (string, error) {
-	// LATER SEMANTIC SEARCH FROM VECTOR DB
-	return "", nil
-}
+## Session
+- ID: %s
+- Directory: %s
 
-func (i *Injector) injectPreToolUse(input *types.HookInput) (string, error) {
-	// FILE SPECIFIC TIME LINE
-	return "", nil
+## Instructions
+- Be terse and direct
+- Drop filler words
+- Technical accuracy > politeness
+- Code blocks unchanged
+
+## Memory
+Memory features coming soon.
+
+## Project Map
+Graphify integration coming soon.
+`, sessionID, cwd)
 }
