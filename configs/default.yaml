@@ -1,0 +1,13 @@
+# Cogito Configuration
+
+# Enable/disable context injection
+enabled: true
+
+# Path to custom context file (markdown)
+context_file: ~/.cogito/context.md
+
+# REDUCED TOKEN OUTPUT WHILE MAINTAINING 100% OF CONTEXT
+compress_output: false
+
+# Debug mode (prints to stderr)
+debug: false

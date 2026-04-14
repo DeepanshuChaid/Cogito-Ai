@@ -11,7 +11,7 @@ type Adapter interface {
 	ParseInput(raw []byte) (*types.HookInput, error)
 
 	// FORMAT_OUTPUT CONVERTS HOOKOUTPUT TO PLATFORM SEPCIFIC JSON
-	FormatOuput(output *types.HookInput) ([]byte, error)
+	FormatOuput(output *types.HookOutput) ([]byte, error)
 
 	// GET_HOOK_EVENT EXTRACTS THE EVENT TYPE FROM THE RAW INPUT
 	GetHookEvent(raw []byte) (types.HookEvent, error)
