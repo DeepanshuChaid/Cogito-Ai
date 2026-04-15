@@ -4,17 +4,32 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 func GenerateContext(cwd, sessionID string) string {
 	// Try to load custom context file
-	contextFile := os.Getenv("COGITO_CONTEXT_FILE")
+	contextFile := strings.TrimSpace(os.Getenv("COGITO_CONTEXT_FILE"))
 	if contextFile == "" {
-		contextFile = filepath.Join(os.Getenv("HOME"), ".cogito", "context.md")
+		homeDir, err := os.UserHomeDir()
+		if err == nil {
+			contextFile = filepath.Join(homeDir, ".cogito", "context.md")
+		}
 	}
 
-	if content, err := os.ReadFile(contextFile); err == nil {
-		return string(content)
+	if contextFile != "" {
+		if content, err := os.ReadFile(contextFile); err == nil {
+			return string(content)
+		}
+	}
+
+	if strings.TrimSpace(cwd) == "" {
+		if wd, err := os.Getwd(); err == nil {
+			cwd = wd
+		}
+	}
+	if strings.TrimSpace(sessionID) == "" {
+		sessionID = "unknown"
 	}
 
 	// Default context
