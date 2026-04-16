@@ -22,6 +22,8 @@ func main() {
 		}
 	}
 
+	fmt.Println("ITS WORKING")
+
 	// This part handles the Codex Hook (JSON input/output)
 	handleHook()
 }
@@ -32,7 +34,7 @@ func handleHook() {
 		CWD string `json:"cwd"`
 	}
 	if err := json.NewDecoder(os.Stdin).Decode(&input); err != nil {
-		return
+		return // Return silently to avoid polluting stdout
 	}
 
 	// 1. Get all compressed memories from SQLite
@@ -47,12 +49,13 @@ func handleHook() {
 	context := injector.BuildFinalPrompt("Start session", memTexts)
 
 	output := map[string]interface{}{
-		"continue": true,
-		"systemMessage": context,
+		"continue":      true,
+		"suppressOutput": true, // Added this to tell Codex not to print the system message to the user
+		"systemMessage":  context,
 	}
 
 	jsonOut, _ := json.Marshal(output)
-	fmt.Println(string(jsonOut))
+	fmt.Println(string(jsonOut)) // THE ONLY PRINT ALLOWED
 }
 
 func runInstall() {

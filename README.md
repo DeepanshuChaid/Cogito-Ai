@@ -9,5 +9,5 @@
 ### For Developers (Go installed)
 
 ```bash
-go install [github.com/DeepanshuChaid/Cogito-Ai-Memo@latest](https://github.com/DeepanshuChaid/Cogito-Ai-Memo@latest)
+go install ./cmd/cogito
 ```

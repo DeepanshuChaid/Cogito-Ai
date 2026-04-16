@@ -1,7 +1,6 @@
 package injector
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -20,10 +19,8 @@ func BuildFinalPrompt(userQuery string, memories []string) string {
 
 	for _, mem := range memories {
 		sb.WriteString("- " + mem + "\n")
-		fmt.Println("INJECTOR FUNCTIONS RUNNING")
 	}
 
 	sb.WriteString("\nUSER QUERY: " + userQuery)
-	fmt.Println("INJECTOR COMPLETED")
 	return sb.String()
 }
