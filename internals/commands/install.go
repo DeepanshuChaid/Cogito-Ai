@@ -14,29 +14,35 @@ func Install() {
 	fmt.Println("Installing Cogito...")
 
 	execPath, _ := os.Executable()
+	execPath, _ = filepath.EvalSymlinks(execPath) // 🔥 important
+
 	cwd, _ := os.Getwd()
 
-	// Create .cogito in current directory, not home
+	// Create .cogito
 	cogitoDir := filepath.Join(cwd, ".cogito")
 	os.MkdirAll(cogitoDir, 0755)
 
-
-	// Create .codex hooks directory
+	// Create .codex
 	hooksDir := filepath.Join(cwd, ".codex")
 	os.MkdirAll(hooksDir, 0755)
 
-	relPath, _ := filepath.Rel(cwd, execPath)
+	// ✅ Quote path (Windows-safe)
+	// commandPath := fmt.Sprintf("\"%s\"", execPath)
+	commandPath := execPath // ✅ correct
 
 	hooksConfig := map[string]interface{}{
 		"hooks": map[string]interface{}{
 			"SessionStart": []map[string]string{
-				{"type": "command", "command": relPath},  // Use relative
+				{
+					"type":    "command",
+					"command": commandPath,
+				},
 			},
 		},
 	}
 
 	content, _ := json.MarshalIndent(hooksConfig, "", "  ")
 	os.WriteFile(filepath.Join(hooksDir, "hooks.json"), content, 0644)
-	fmt.Printf("✅ Installed hook at %s\n", execPath)
-}
 
+	fmt.Println("\n✅ Hook installed successfully!")
+}

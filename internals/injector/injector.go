@@ -36,9 +36,9 @@ Rules:
 }
 
 func BuildFinalPrompt(userQuery string, memories []string, cfg *config.Config) string {
-	if !cfg.Enabled {
-		return userQuery
-	}
+	// if !cfg.Enabled {
+	// 	return userQuery
+	// }
 
 	var sb strings.Builder
 

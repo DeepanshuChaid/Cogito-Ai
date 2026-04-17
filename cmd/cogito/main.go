@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 
 	// "path/filepath"
@@ -15,6 +17,13 @@ import (
 )
 
 func main() {
+	if err := db.InitDB(); err != nil {
+        fmt.Fprintf(os.Stderr, "Critical Error: Could not initialize DB: %v\n", err)
+        os.Exit(1)
+    }
+
+	fmt.Println("DB INTIALIZED SUCCESSFULLY!")
+
 	if len(os.Args) > 1 {
 		switch os.Args[1] {
 
@@ -53,47 +62,102 @@ func main() {
 }
 
 func handleHook() {
-	stat, _ := os.Stdin.Stat()
 
-	// If stdin is from terminal → NOT a hook
+	stat, _ := os.Stdin.Stat()
 	if (stat.Mode() & os.ModeCharDevice) != 0 {
 		welcomeUi.ShowWelcomeUI()
 		return
 	}
 
-	var input struct {
-		CWD string `json:"cwd"`
-	}
-	if err := json.NewDecoder(os.Stdin).Decode(&input); err != nil {
-		return
-	}
-
-	cfg, err := config.Load()
+	// 1. Read the entire input into a byte slice
+	rawInput, err := io.ReadAll(os.Stdin)
 	if err != nil {
+		fmt.Fprintf(os.Stderr, "DEBUG: Read Stdin Failed: %v\n", err)
 		return
 	}
 
-	if !cfg.Enabled {
+	// 1. Read everything from Stdin
+    raw, err := io.ReadAll(os.Stdin)
+    if err != nil {
+        return
+    }
+
+    // 2. PowerShell might send bytes separated by Newlines/Carriage Returns
+    // This cleans up the 123 \n 34 \n 99 mess you saw in the debug
+    cleaned := bytes.ReplaceAll(raw, []byte("\r"), []byte(""))
+    cleaned = bytes.ReplaceAll(cleaned, []byte("\n"), []byte(""))
+
+    // 3. Strip the BOM (the 'ï' thing) if it's there
+    cleaned = bytes.TrimPrefix(cleaned, []byte("\xef\xbb\xbf"))
+
+    var input struct {
+        CWD string `json:"cwd"`
+		Prompt string `json:"prompt"`
+    }
+
+    if err := json.Unmarshal(cleaned, &input); err != nil {
+        fmt.Fprintf(os.Stderr, "DEBUG: Still failing. Content: %s\n", string(cleaned))
+        return
+    }
+
+	// 2. Strip the UTF-8 BOM (0xEF, 0xBB, 0xBF) if it exists
+	// This is what is causing the 'ï' error
+	cleanedInput := bytes.TrimPrefix(rawInput, []byte("\xef\xbb\xbf"))
+
+	// 3. Unmarshal from the cleaned byte slice instead of using the decoder directly
+	if err := json.Unmarshal(cleanedInput, &input); err != nil {
+		fmt.Fprintf(os.Stderr, "DEBUG: JSON Decode Failed: %v\n", err)
+		// Print what we actually got so you can see it
+		fmt.Fprintf(os.Stderr, "DEBUG: Raw Input was: %s\n", string(cleanedInput))
 		return
 	}
 
-	memoriesRaw, _ := db.GetAllMemories()
-	var memTexts []string
-	for _, m := range memoriesRaw {
-		memTexts = append(memTexts, fmt.Sprintf("%s: %s", m.FilePath, m.CompressedText))
-	}
+    if (stat.Mode() & os.ModeCharDevice) != 0 {
+        welcomeUi.ShowWelcomeUI()
+        return
+    }
 
 
+    // DEBUG 1: Is the JSON coming in correctly?
+    if err := json.NewDecoder(os.Stdin).Decode(&input); err != nil {
+        fmt.Fprintf(os.Stderr, "DEBUG: JSON Decode Failed: %v\n", err)
+        return
+    }
 
-	context := injector.BuildFinalPrompt("Start session", memTexts, cfg)
+    cfg, err := config.Load()
+    // DEBUG 2: Is the config file actually there?
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "DEBUG: Config Load Failed: %v\n", err)
+        return
+    }
 
-	output := map[string]interface{}{
-		"continue":      true,
-		"suppressOutput": true,
-		"systemMessage":  context,
-	}
+    // DEBUG 3: Is it just turned off?
+    if !cfg.Enabled {
+        fmt.Fprintf(os.Stderr, "DEBUG: Cogito is DISABLED in config\n")
+        return
+    }
 
-	jsonOut, _ := json.Marshal(output)
-	fmt.Println(string(jsonOut))
+    memoriesRaw, err := db.GetAllMemories()
+    // DEBUG 4: Did the DB crash?
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "DEBUG: DB Error: %v\n", err)
+        return
+    }
+
+    var memTexts []string
+    for _, m := range memoriesRaw {
+        memTexts = append(memTexts, fmt.Sprintf("%s: %s", m.FilePath, m.CompressedText))
+    }
+
+    context := injector.BuildFinalPrompt("Start session", memTexts, cfg)
+
+    output := map[string]interface{}{
+        "continue":       true,
+        "suppressOutput": true,
+        "systemMessage":  context,
+    }
+
+    jsonOut, _ := json.Marshal(output)
+    fmt.Println(string(jsonOut))
 }
 

@@ -2,7 +2,7 @@
   "hooks": {
     "SessionStart": [
       {
-        "command": "..\\..\\..\\go\\bin\\cogito.exe",
+        "command": "C:\\Users\\HP\\go\\bin\\cogito.exe",
         "type": "command"
       }
     ]

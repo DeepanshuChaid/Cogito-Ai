@@ -2,9 +2,10 @@ package db
 
 import (
 	"database/sql"
-	"log"
 	"os"
 	"path/filepath"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type Memory struct {
@@ -12,55 +13,36 @@ type Memory struct {
 	CompressedText string
 }
 
-func GetDB() *sql.DB {
+var DB *sql.DB
+
+func InitDB() error {
+	// 1. Determine where to store the DB (e.g., ~/.cogito/cogito.db)
 	home, _ := os.UserHomeDir()
 	dbPath := filepath.Join(home, ".cogito", "cogito.db")
 
+	// Ensure the directory exists
 	os.MkdirAll(filepath.Dir(dbPath), 0755)
 
-	db, err := sql.Open("sqlite3", dbPath)
+	// 2. Open the database
+	var err error
+	DB, err = sql.Open("sqlite", dbPath)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
-	sqlStmt := `
-	CREATE TABLE IF NOT EXISTS memories (
-		file_path TEXT PRIMARY KEY,
-		compressed_text TEXT,
-		last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-	);`
-
-	_, err = db.Exec(sqlStmt)
-	if err != nil{
-		log.Fatal(err)
-	}
-
-	return db
-}
-
-func SaveMemory (filePath, text string) error {
-	db := GetDB()
-	defer db.Close()
-
-	_, err := db.Exec("INSERT OR REPLACE INTO memories (file_path, compressed_text) VALUES (?, ?)", filePath, text)
-
-	return err
-}
-
-func GetAllMemories() ([]Memory, error) {
-	db := GetDB()
-	defer db.Close()
-	rows, err := db.Query("SELECT file_path, compressed_text FROM memories")
+	// 3. Read the schema.sql file
+	schemaFile := filepath.Join("internals", "db", "schema.sql")
+	schema, err := os.ReadFile(schemaFile)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	defer rows.Close()
 
-	var memories []Memory
-	for rows.Next() {
-		var m Memory
-		rows.Scan(&m.FilePath, &m.CompressedText)
-		memories = append(memories, m)
+	// 4. Execute the schema to create tables
+	_, err = DB.Exec(string(schema))
+	if err != nil {
+		return err
 	}
-	return memories, nil
+
+	return nil
 }
+
