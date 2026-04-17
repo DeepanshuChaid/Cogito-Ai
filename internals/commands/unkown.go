@@ -2,9 +2,9 @@ package commands
 
 import "fmt"
 
-func Unkown() {
-	fmt.Println(`Unkwon Command!
-
+func Unkown(arg string) {
+	fmt.Println("Unkown Command:", arg)
+	fmt.Println(`
 Commands:
 cogito install          Install hooks
 cogito uninstall        Remove hooks

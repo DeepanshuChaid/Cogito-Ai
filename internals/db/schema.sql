@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS sessions (
     started_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     status TEXT DEFAULT 'active',
     user_prompt TEXT
-)
+);
 
 CREATE TABLE IF NOT EXISTS observations (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -16,8 +16,8 @@ CREATE TABLE IF NOT EXISTS observations (
     compressed_text TEXT,
     files_touched TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FORGEIGN KEY(session_id) REFERENCES sessions(sessions_id))
-)
+    FOREIGN KEY(session_id) REFERENCES sessions(session_id)
+);
 
 CREATE TABLE IF NOT EXISTS summaries (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -27,4 +27,4 @@ CREATE TABLE IF NOT EXISTS summaries (
     learned_facts TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(session_id) REFERENCES sessions(session_id)
-)
+);

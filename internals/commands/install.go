@@ -11,7 +11,6 @@ import (
 
 func Install() {
 	configTui.RunConfigTUI()
-	fmt.Println("Installing Cogito...")
 
 	execPath, _ := os.Executable()
 	execPath, _ = filepath.EvalSymlinks(execPath) // 🔥 important
@@ -44,5 +43,5 @@ func Install() {
 	content, _ := json.MarshalIndent(hooksConfig, "", "  ")
 	os.WriteFile(filepath.Join(hooksDir, "hooks.json"), content, 0644)
 
-	fmt.Println("\n✅ Hook installed successfully!")
+	fmt.Println("✅ Hook installed successfully!")
 }
