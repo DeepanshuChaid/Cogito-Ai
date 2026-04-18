@@ -44,6 +44,9 @@ func handleSessionStart() {
 		fmt.Fprintf(os.Stderr, "⚠️  Could not write hook log: %v\n", err)
 	}
 
+	// fmt.Fprintf(os.Stderr, "BACHAO BACHAO MINECRAFT YOUTUBER! %v\n", errors.New("WHERE ARE THE FRESH MINORS!"))
+
+
 	// CLEAN
 	cleaned := bytes.TrimPrefix(rawInput, []byte("\xef\xbb\xbf"))
 	cleaned = bytes.ReplaceAll(cleaned, []byte("\r"), []byte(""))
@@ -64,6 +67,7 @@ func handleSessionStart() {
 	_, err = db.CreateSession(input.SessionID, input.CWD, input.Prompt)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "⚠️  SessionStart: CreateSession Failed: %v\n", err)
+		return
 	}
 
 	// FETCH MEMORIES (Progressive Disclosure)
