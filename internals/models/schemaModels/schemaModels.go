@@ -48,16 +48,7 @@ type Observation struct {
 	CreatedAt       time.Time `json:"created_at"`
 }
 
-// =============================================================================
-// OBSERVATION SEARCH RESULT (observations_fts virtual table)
-// For Progressive Disclosure - Step 1 (Cheap Token Cost)
-// =============================================================================
-type ObservationSearchResult struct {
-	ID        int     `json:"id"`
-	Title     string  `json:"title"`
-	Rank      float64 `json:"rank"`  // FTS5 relevance score (lower is better)
-	Score     float64 `json:"score"` // Normalized score (0-1, higher is better)
-}
+
 
 // =============================================================================
 // SESSION SUMMARIES (session_summaries table)
