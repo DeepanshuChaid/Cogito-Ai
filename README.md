@@ -16,4 +16,7 @@ go install ./cmd/cogito
 
 ```bash
 '{"cwd":"C:\\Users\\HP\\downloads\\coding\\cogito","prompt":"hi"}' | go run .\cmd\cogito\main.go
+
+// run code with local llm
+codex --oss -m llama3.2:1b --yolo
 ```

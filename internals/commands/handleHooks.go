@@ -5,13 +5,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/DeepanshuChaid/Cogito-Ai.git/internals/config"
 	"github.com/DeepanshuChaid/Cogito-Ai.git/internals/db"
 	"github.com/DeepanshuChaid/Cogito-Ai.git/internals/injector"
-	"github.com/DeepanshuChaid/Cogito-Ai.git/internals/utils/hooklog"
 )
 
 func HandleHooks(hookType string) {
@@ -39,13 +41,22 @@ func handleSessionStart() {
 		fmt.Fprintf(os.Stderr, "❌ SessionStart: Read Failed: %v\n", err)
 		return
 	}
-	if err := hooklog.Log("SessionStart", string(rawInput)); err != nil {
-		// During manual debugging you can see the problem:
-		fmt.Fprintf(os.Stderr, "⚠️  Could not write hook log: %v\n", err)
-	}
 
-	// fmt.Fprintf(os.Stderr, "BACHAO BACHAO MINECRAFT YOUTUBER! %v\n", errors.New("WHERE ARE THE FRESH MINORS!"))
+	// Add "os" and "path/filepath" to imports
+    home, _ := os.UserHomeDir()
+    debugFile := filepath.Join(home, "cogito_raw_input.log")
+    os.WriteFile(debugFile, rawInput, 0644)
 
+    go func() {
+        client := http.Client{Timeout: 2 * time.Second} // Give it more time
+        _, err := client.Get("http://localhost:3000/session-start")
+        if err != nil {
+            // Log this to your debug file so you can see why it failed
+            f, _ := os.OpenFile(debugFile, os.O_APPEND|os.O_WRONLY, 0644)
+            fmt.Fprintf(f, "\nHTTP Error: %v", err)
+            f.Close()
+        }
+    }()
 
 	// CLEAN
 	cleaned := bytes.TrimPrefix(rawInput, []byte("\xef\xbb\xbf"))
