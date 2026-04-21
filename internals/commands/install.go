@@ -7,29 +7,17 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
-
-	"github.com/DeepanshuChaid/Cogito-Ai.git/internals/utils/configTui"
 )
 
 func Install() {
-	configTui.RunConfigTUI()
-
 	execPath, _ := os.Executable()
 	execPath, _ = filepath.EvalSymlinks(execPath)
 
 	cwd, _ := os.Getwd()
 
-	// Create .cogito
-	cogitoDir := filepath.Join(cwd, ".cogito")
-	os.MkdirAll(cogitoDir, 0755)
-
-	// Create .codex
-	hooksDir := filepath.Join(cwd, ".codex")
-	os.MkdirAll(hooksDir, 0755)
 
 	// FOR EDGE CASE WE GONNA WRITE IT IN THE HOME DIR AS WELL
 	homeDir, _ := os.UserHomeDir()
-	homeCodexDir := filepath.Join(homeDir, ".codex")
 
 	// ✅ All 3 Hooks with args
 	hooksConfig := map[string]interface{}{
@@ -58,9 +46,10 @@ func Install() {
 		},
 	}
 
+	hooksDir := filepath.Join(cwd, ".codex")
+
 	content, _ := json.MarshalIndent(hooksConfig, "", "  ")
 	os.WriteFile(filepath.Join(hooksDir, "hooks.json"), content, 0644)
-	os.WriteFile(filepath.Join(homeCodexDir, "hooks.json"), content, 0644)
 
 	fmt.Println("✅ Cogito hooks installed successfully!")
 	fmt.Println("📍 Config:", filepath.Join(hooksDir, "hooks.json"))
@@ -166,22 +155,34 @@ func upsertCodexMCPServer(homeDir string) error {
 		return err
 	}
 
+	// 1. Clean up existing content: remove old Cogito blocks and excess whitespace
 	content := string(existing)
 	content = stripCogitoMCPBlock(content)
-	if strings.TrimSpace(content) != "" && !strings.HasSuffix(content, "\n") {
-		content += "\n"
+	content = strings.TrimSpace(content)
+
+	// 2. Prepare the new block
+	newBlock := "\n\n[mcp_servers.cogito]\n" +
+		"command = \"cogito\"\n" +
+		"args = [\"serve-mcp\"]\n"
+
+	// 3. Join them. If content is empty, just write the block (minus leading newlines)
+	finalContent := ""
+	if content == "" {
+		finalContent = strings.TrimSpace(newBlock) + "\n"
+	} else {
+		finalContent = content + newBlock
 	}
 
-	content += "[mcp_servers.cogito]\n"
-	content += "command = \"cogito\"\n"
-	content += "args = [\"serve-mcp\"]\n"
-
-	return os.WriteFile(configPath, []byte(content), 0644)
+	return os.WriteFile(configPath, []byte(finalContent), 0644)
 }
 
 func stripCogitoMCPBlock(content string) string {
-	blockPattern := `(?ms)\n?\[mcp_servers\.cogito\]\n(?:[^\[]*\n?)*`
+	// This regex finds "[mcp_servers.cogito]" and matches everything
+	// until it sees another section start "[" or reaches the end of the file.
+	// (?m) = multi-line mode
+	// (?s) = let dot (.) match newlines
+	blockPattern := `(?ms)^\[mcp_servers\.cogito\].*?(?=\n\[|$)`
 	re := regexp.MustCompile(blockPattern)
-	updated := re.ReplaceAllString(content, "")
-	return strings.TrimRight(updated, "\n") + "\n"
+
+	return re.ReplaceAllString(content, "")
 }
