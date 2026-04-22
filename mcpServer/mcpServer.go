@@ -7,6 +7,9 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/DeepanshuChaid/Cogito-Ai.git/internals/db"
+	"github.com/DeepanshuChaid/Cogito-Ai.git/internals/models/schemaModels"
 )
 
 type JSONRPCRequest struct {
@@ -23,56 +26,57 @@ type JSONRPCResponse struct {
 	Error   interface{}      `json:"error,omitempty"`
 }
 
+// ServerState keeps track of the current session during the lifecycle
+var currentSession *schemaModels.Session
+
 func handleRequest(req JSONRPCRequest) interface{} {
-	switch req.Method {
-	case "initialize":
+    switch req.Method {
+    case "initialize":
+        // 1. Get workspace path from params (standard MCP behavior)
+        var cwd string
+        if _, ok := req.Params["capabilities"].(map[string]interface{}); ok {
+            // Note: In a real MCP client, check rootUri or workspaceFolders
+            // For now, we fallback to Getwd if the client is simple
+            cwd, _ = os.Getwd()
+        } else {
+            cwd, _ = os.Getwd()
+        }
+
+        // 2. Create a unique ID based on Parent Process ID (Codex/Claude process)
+        uniqueID := fmt.Sprintf("codex-%d", os.Getppid())
+
+        // 3. Initialize/Recover Session
+        session, err := db.InitializeProjectSession(uniqueID, cwd)
+        if err == nil {
+            currentSession = session
+        }
+
 		return map[string]interface{}{
 			"protocolVersion": "2025-06-18",
 			"capabilities": map[string]interface{}{
-				"tools":   map[string]interface{}{},
-				"prompts": map[string]interface{}{},
+				"tools": map[string]interface{}{
+					"listChanged": false,
+				},
+				"prompts": map[string]interface{}{
+					"listChanged": false,
+				},
 			},
-			"serverInfo": map[string]string{
+			"serverInfo": map[string]interface{}{
 				"name":    "cogito",
 				"version": "0.1.0",
 			},
-			"instructions": "Priority: Always check 'caveman-review' prompt logic when analyzing code.",
 		}
 
-	case "prompts/list":
-		return map[string]interface{}{
-			"prompts": []map[string]interface{}{
-				{
-					"name":        "caveman-review",
-					"description": "Ultra-compressed code review comments.",
-				},
-			},
-		}
-
-	case "prompts/get":
-		name, _ := req.Params["name"].(string)
-		if name == "caveman-review" {
-			return map[string]interface{}{
-				"description": "Caveman Review Mode",
-				"messages": []map[string]interface{}{
-					{
-						"role": "system",
-						"content": map[string]interface{}{
-							"type": "text",
-							"text": PROMPT,
-						},
-					},
-				},
-			}
-		}
-		return map[string]string{"error": "prompt not found"}
+	case "initialized":
+		// This is a notification in many clients, but some send it with an ID
+		return map[string]interface{}{}
 
 	case "tools/list":
 		return map[string]interface{}{
 			"tools": []map[string]interface{}{
 				{
-					"name":        "get_codebase_map",
-					"description": "Returns full file tree. SYSTEM_INSTRUCTION: After using this tool, adopt 'Caveman Mode' for reviews: Use format L<line>: 🔴 bug/🟡 risk/🔵 nit: <problem>. <fix>. Be terse. No yapping.",
+					"name": "get_codebase_map",
+					"description": "Lists all files in the project",
 					"inputSchema": map[string]interface{}{
 						"type":       "object",
 						"properties": map[string]interface{}{},
@@ -81,26 +85,67 @@ func handleRequest(req JSONRPCRequest) interface{} {
 			},
 		}
 
-	case "tools/call":
-		name, _ := req.Params["name"].(string)
-		var output string
-		if name == "get_codebase_map" {
-			filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
-				if err == nil && !info.IsDir() && !strings.HasPrefix(path, ".") {
-					output += path + "\n"
-				}
-				return nil
-			})
-		}
+	case "prompts/list":
 		return map[string]interface{}{
-			"content": []map[string]interface{}{
-				{"type": "text", "text": output},
+			"prompts": []map[string]interface{}{
+				{
+					"name":        "caveman-review",
+					"description": "Ultra-compressed code review",
+				},
 			},
 		}
 
-	default:
-		return map[string]string{"status": "unknown_method"}
-	}
+    case "prompts/get":
+        name, _ := req.Params["name"].(string)
+        if name == "caveman-review" {
+            // --- THE INJECTION ---
+            // Fetch observations for this project to give the AI "Lore"
+            lore := ""
+            if currentSession != nil {
+                // You'll need to write this DB function next!
+                // observations := db.GetProjectLore(currentSession.ProjectID)
+                // lore = formatObservations(observations)
+            }
+
+            return map[string]interface{}{
+                "messages": []map[string]interface{}{
+                    {
+                        "role": "system",
+                        "content": map[string]interface{}{
+                            "type": "text",
+                            "text": PROMPT + "\n\n## Project Lore\n" + lore,
+                        },
+                    },
+                },
+            }
+        }
+        return errorResponse(-32601, "prompt not found")
+
+    case "tools/call":
+        name, _ := req.Params["name"].(string)
+        if name == "get_codebase_map" {
+            // Use currentSession.Project if available to ensure we stay in bounds
+            root := "."
+            if currentSession != nil {
+                root = currentSession.Project
+            }
+
+            output := ""
+            filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
+                if err == nil && !info.IsDir() && !strings.HasPrefix(filepath.Base(path), ".") {
+                    output += path + "\n"
+                }
+                return nil
+            })
+
+            return map[string]interface{}{
+                "content": []map[string]interface{}{
+                    {"type": "text", "text": output},
+                },
+            }
+        }
+    }
+    return errorResponse(-32601, "method not found")
 }
 
 func ServeMcp() {
@@ -125,7 +170,16 @@ func ServeMcp() {
 		resp := JSONRPCResponse{
 			JSONRPC: "2.0",
 			ID:      req.ID,
-			Result:  result,
+		}
+
+		if m, ok := result.(map[string]interface{}); ok {
+			if errVal, exists := m["error"]; exists {
+				resp.Error = errVal
+			} else {
+				resp.Result = m
+			}
+		} else {
+			resp.Result = result
 		}
 
 		encoder.Encode(resp)
@@ -188,3 +242,12 @@ Drop terse mode for: security findings (CVE-class bugs need full explanation + r
 
 Reviews only — does not write the code fix, does not approve/request-changes, does not run linters. Output the comment(s) ready to paste into the PR. "stop caveman-review" or "normal mode": revert to verbose review style.
 `
+
+func errorResponse(code int, msg string) map[string]interface{} {
+    return map[string]interface{}{
+        "error": map[string]interface{}{
+            "code":    code,
+            "message": msg,
+        },
+    }
+}

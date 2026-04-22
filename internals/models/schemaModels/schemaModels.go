@@ -6,15 +6,21 @@ import "time"
 // SESSIONS (sdk_sessions table)
 // Tracks every session with both IDE and Cogito IDs
 // =============================================================================
+type Project struct {
+	ID           int       `json:"id"`
+	Name         string    `json:"name"`
+	RootPath     string    `json:"root_path"`
+	TechStack    string    `json:"tech_stack"`
+	LastAccessed time.Time `json:"last_accessed"`
+}
+
 type Session struct {
-	ID                int       `json:"id"`
-	ContentSessionID  string    `json:"content_session_id"` // The IDE/Codex Session ID
-	MemorySessionID   *string    `json:"memory_session_id"`  // Cogito's Unique ID (can be null initially)
-	Project           string    `json:"project"`            // Absolute CWD Path
-	Status            string    `json:"status"`             // active, completed, failed
-	UserPrompt        string    `json:"user_prompt"`        // Initial prompt that started session
-	StartedAt         time.Time `json:"started_at"`
-	CompletedAt       *time.Time `json:"completed_at"`
+	ID               int        `json:"id"`
+	SessionID        string     `json:"session_id"` // The tool's ID (Codex/Claude)
+	ProjectID        int        `json:"project_id"` // Link to the Project table
+	Project          string     `json:"project"`    // Keep raw path for convenience
+	StartedAt        time.Time  `json:"started_at"`
+	CompletedAt      *time.Time `json:"completed_at"`
 }
 
 

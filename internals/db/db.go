@@ -46,41 +46,36 @@ func resolveDBPath() (string, error) {
 }
 
 func InitDB() error {
-	dbPath, err := resolveDBPath()
-	if err != nil {
-		return err
-	}
+    dbPath, err := resolveDBPath()
+    if err != nil { return err }
 
-	DB, err = sql.Open("sqlite", dbPath)
-	if err != nil {
-		return err
-	}
-	if err := DB.Ping(); err != nil {
-		return err
-	}
+    DB, err = sql.Open("sqlite", dbPath)
+    if err != nil { return err }
 
-	if _, err := DB.Exec(schemaSQL); err != nil {
-		return err
-	}
-	if _, err := DB.Exec(`
-		DROP TRIGGER IF EXISTS observations_ai;
-		DROP TABLE IF EXISTS observations_fts;
-		CREATE VIRTUAL TABLE observations_fts USING fts5(
-			title, compressed_text, facts, files_touched,
-			content='observations',
-			content_rowid='id'
-		);
-		CREATE TRIGGER observations_ai AFTER INSERT ON observations BEGIN
-			INSERT INTO observations_fts(rowid, title, compressed_text, facts, files_touched)
-			VALUES (new.id, new.title, new.compressed_text, new.facts, new.files_touched);
-		END;
-		INSERT INTO observations_fts(rowid, title, compressed_text, facts, files_touched)
-		SELECT id, title, compressed_text, facts, files_touched FROM observations;
-	`); err != nil {
-		return err
-	}
+    // 1. SET PRAGMAS INDIVIDUALLY
+    DB.SetMaxOpenConns(1)
+    if _, err := DB.Exec("PRAGMA journal_mode=WAL;"); err != nil { return err }
+    if _, err := DB.Exec("PRAGMA busy_timeout=5000;"); err != nil { return err }
 
-	return nil
+    // 2. Run your base schema
+    if _, err := DB.Exec(schemaSQL); err != nil { return err }
+
+    // 3. ONLY CREATE FTS IF IT DOESN'T EXIST (No more DROPPING every time)
+    _, err = DB.Exec(`
+        CREATE VIRTUAL TABLE IF NOT EXISTS observations_fts USING fts5(
+            title, compressed_text, facts, files_touched,
+            content='observations',
+            content_rowid='id'
+        );
+
+        -- Use 'CREATE TRIGGER IF NOT EXISTS'
+        CREATE TRIGGER IF NOT EXISTS observations_ai AFTER INSERT ON observations
+        BEGIN
+            INSERT INTO observations_fts(rowid, title, compressed_text, facts, files_touched)
+            VALUES (new.id, new.title, new.compressed_text, new.facts, new.files_touched);
+        END;
+    `)
+    return err
 }
 
 func GetAllMemories(cwd string, limit int) []schemaModels.Observation {

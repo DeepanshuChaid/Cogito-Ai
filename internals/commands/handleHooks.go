@@ -75,11 +75,11 @@ func handleSessionStart() {
 	}
 
 	// CREATE SESSION
-	_, err = db.CreateSession(input.SessionID, input.CWD, input.Prompt)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "⚠️  SessionStart: CreateSession Failed: %v\n", err)
-		return
-	}
+	// _, err = db.CreateSession(input.SessionID, input.CWD, input.Prompt)
+	// if err != nil {
+	// 	fmt.Fprintf(os.Stderr, "⚠️  SessionStart: CreateSession Failed: %v\n", err)
+	// 	return
+	// }
 
 	// FETCH MEMORIES (Progressive Disclosure)
 	summary, _ := db.GetLatestSessionSummary(input.CWD)
@@ -151,14 +151,14 @@ func handleToolUse() {
 	}
 
 	// GET SESSION
-	session, err := db.GetSessionByContentID(input.SessionID)
-	if err != nil || session == nil {
-		fmt.Fprintf(os.Stderr, "⚠️  ToolUse: Session Not Found: %s\n", input.SessionID)
-		output := map[string]interface{}{"continue": true, "suppressOutput": true}
-		jsonOut, _ := json.Marshal(output)
-		fmt.Println(string(jsonOut))
-		return
-	}
+	// session, err := db.GetSessionByContentID(input.SessionID)
+	// if err != nil || session == nil {
+	// 	fmt.Fprintf(os.Stderr, "⚠️  ToolUse: Session Not Found: %s\n", input.SessionID)
+	// 	output := map[string]interface{}{"continue": true, "suppressOutput": true}
+	// 	jsonOut, _ := json.Marshal(output)
+	// 	fmt.Println(string(jsonOut))
+	// 	return
+	// }
 
 	// DECIDE IF WORTH SAVING
 	if !shouldSaveObservation(input.ToolName, input.ToolOutput) {
@@ -169,25 +169,25 @@ func handleToolUse() {
 	}
 
 	// CATEGORIZE
-	obsType := categorizeObservation(input.ToolName, input.ToolOutput)
+	// obsType := categorizeObservation(input.ToolName, input.ToolOutput)
 
-	// EXTRACT FILES (Simple parsing - improve in Stage 3)
-	filesTouched := extractFiles(input.ToolInput, input.ToolOutput)
+	// // EXTRACT FILES (Simple parsing - improve in Stage 3)
+	// filesTouched := extractFiles(input.ToolInput, input.ToolOutput)
 
 	// CREATE OBSERVATION (Direct Write - No Queue)
-	err = db.CreateObservation(
-		*session.MemorySessionID,
-		input.CWD,
-		obsType,
-		fmt.Sprintf("%s: %s", input.ToolName, getActionSummary(input.ToolName, input.ToolOutput)),
-		input.ToolOutput, // In Stage 3, LLM compresses this
-		"[]",             // facts (JSON array)
-		filesTouched,     // files_touched (JSON array)
-		0,                // discovery_tokens
-	)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "⚠️  ToolUse: CreateObservation Failed: %v\n", err)
-	}
+	// err = db.CreateObservation(
+	// 	*session.MemorySessionID,
+	// 	input.CWD,
+	// 	obsType,
+	// 	fmt.Sprintf("%s: %s", input.ToolName, getActionSummary(input.ToolName, input.ToolOutput)),
+	// 	input.ToolOutput, // In Stage 3, LLM compresses this
+	// 	"[]",             // facts (JSON array)
+	// 	filesTouched,     // files_touched (JSON array)
+	// 	0,                // discovery_tokens
+	// )
+	// if err != nil {
+	// 	fmt.Fprintf(os.Stderr, "⚠️  ToolUse: CreateObservation Failed: %v\n", err)
+	// }
 
 	// OUTPUT
 	output := map[string]interface{}{"continue": true, "suppressOutput": true}
@@ -224,26 +224,26 @@ func handleSessionEnd() {
 	}
 
 	// GET SESSION
-	session, err := db.GetSessionByContentID(input.SessionID)
-	if err != nil || session == nil {
-		fmt.Fprintf(os.Stderr, "⚠️  SessionEnd: Session Not Found: %s\n", input.SessionID)
-		output := map[string]interface{}{"continue": true, "suppressOutput": true}
-		jsonOut, _ := json.Marshal(output)
-		fmt.Println(string(jsonOut))
-		return
-	}
+	// session, err := db.GetSessionByContentID(input.SessionID)
+	// if err != nil || session == nil {
+	// 	fmt.Fprintf(os.Stderr, "⚠️  SessionEnd: Session Not Found: %s\n", input.SessionID)
+	// 	output := map[string]interface{}{"continue": true, "suppressOutput": true}
+	// 	jsonOut, _ := json.Marshal(output)
+	// 	fmt.Println(string(jsonOut))
+	// 	return
+	// }
 
 	// CREATE SUMMARY
-	err = db.CreateSessionSummary(
-		*session.MemorySessionID,
-		input.CWD,
-		session.UserPrompt, // request
-		input.Summary,      // learned
-		"Continue work",    // next_steps
-	)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "⚠️  SessionEnd: CreateSummary Failed: %v\n", err)
-	}
+	// err = db.CreateSessionSummary(
+	// 	*session.MemorySessionID,
+	// 	input.CWD,
+	// 	session.UserPrompt, // request
+	// 	input.Summary,      // learned
+	// 	"Continue work",    // next_steps
+	// )
+	// if err != nil {
+	// 	fmt.Fprintf(os.Stderr, "⚠️  SessionEnd: CreateSummary Failed: %v\n", err)
+	// }
 
 	// COMPLETE SESSION
 	err = db.CompleteSession(input.SessionID)

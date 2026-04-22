@@ -17,7 +17,7 @@ import (
 
 func main() {
 	if err := db.InitDB(); err != nil {
-		fmt.Fprintf(os.Stderr, "Critical Error: Could not initialize DB: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Critical Error: (I MAY ACT NON CHALANT BUT I AM KINDA JUST A BITCH) Could not initialize DB: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -59,12 +59,27 @@ func main() {
 			mcpServer.ServeMcp()
 			return
 
+		case "session-start":
+			var cwd string
+			cwd, _ = os.Getwd()
+
+			// 2. Create a unique ID based on Parent Process ID (Codex/Claude process)
+			uniqueID := fmt.Sprintf("codex-%d", os.Getppid())
+			_, err := db.InitializeProjectSession(uniqueID, cwd)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error initializing project session: %v\n", err)
+				os.Exit(1)
+			}
+			return
+
+
 		default:
 			commands.Unknown(os.Args[1])
 			return
 		}
 	}
 
+	welcomeUi.ShowWelcomeUI()
 	// handleHook()
 }
 

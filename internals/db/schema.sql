@@ -1,10 +1,7 @@
 CREATE TABLE IF NOT EXISTS sdk_sessions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    content_session_id TEXT UNIQUE NOT NULL,  -- IDE?CODEX SESSION ID
-    memory_session_id TEXT, -- COGITO UNIQUE ID
+    session_id TEXT UNIQUE NOT NULL,  -- CODEX SESSION ID
     project TEXT NOT NULL, -- ABSOLUTE CWD PATH
-    status TEXT DEFAULT 'active', -- active, completed, failed
-    user_prompt TEXT, -- initial prompt
     started_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     completed_at DATETIME
 );
@@ -61,3 +58,11 @@ CREATE TRIGGER IF NOT EXISTS observations_ai AFTER INSERT ON observations BEGIN
   INSERT INTO observations_fts(rowid, title, compressed_text, facts, files_touched)
   VALUES (new.id, new.title, new.compressed_text, new.facts, new.files_touched);
 END;
+
+CREATE TABLE IF NOT EXISTS projects (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT UNIQUE NOT NULL,       -- e.g., "Lair-Whiteboard"
+    root_path TEXT UNIQUE NOT NULL,  -- e.g., "/home/deepanshu/dev/lair"
+    tech_stack TEXT,                 -- e.g., "Go, Gin, Next.js"
+    last_accessed DATETIME DEFAULT CURRENT_TIMESTAMP
+);

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 )
 
@@ -150,39 +149,51 @@ func upsertCodexMCPServer(homeDir string) error {
 	}
 
 	configPath := filepath.Join(codexDir, "config.toml")
-	existing, err := os.ReadFile(configPath)
-	if err != nil && !os.IsNotExist(err) {
-		return err
-	}
+	existing, _ := os.ReadFile(configPath) // Ignore error, empty string is fine
 
-	// 1. Clean up existing content: remove old Cogito blocks and excess whitespace
-	content := string(existing)
-	content = stripCogitoMCPBlock(content)
+	// 1. Clean up old block manually
+	content := stripCogitoMCPBlock(string(existing))
 	content = strings.TrimSpace(content)
 
-	// 2. Prepare the new block
+	// 2. Build the new block (using absolute path for reliability)
+	execPath, _ := os.Executable()
+	execPath, _ = filepath.EvalSymlinks(execPath)
+
 	newBlock := "\n\n[mcp_servers.cogito]\n" +
-		"command = \"cogito\"\n" +
+		fmt.Sprintf("command = %q\n", execPath) +
 		"args = [\"serve-mcp\"]\n"
 
-	// 3. Join them. If content is empty, just write the block (minus leading newlines)
-	finalContent := ""
+	// 3. Combine and save
+	finalContent := content + newBlock
 	if content == "" {
 		finalContent = strings.TrimSpace(newBlock) + "\n"
-	} else {
-		finalContent = content + newBlock
 	}
 
 	return os.WriteFile(configPath, []byte(finalContent), 0644)
 }
 
 func stripCogitoMCPBlock(content string) string {
-	// This regex finds "[mcp_servers.cogito]" and matches everything
-	// until it sees another section start "[" or reaches the end of the file.
-	// (?m) = multi-line mode
-	// (?s) = let dot (.) match newlines
-	blockPattern := `(?ms)^\[mcp_servers\.cogito\].*?(?=\n\[|$)`
-	re := regexp.MustCompile(blockPattern)
+	lines := strings.Split(content, "\n")
+	var result []string
+	skipping := false
 
-	return re.ReplaceAllString(content, "")
+	for _, line := range lines {
+		trimmed := strings.TrimSpace(line)
+
+		// If we find our section, start skipping lines
+		if trimmed == "[mcp_servers.cogito]" {
+			skipping = true
+			continue
+		}
+
+		// If we hit a NEW section (starts with [), stop skipping
+		if skipping && strings.HasPrefix(trimmed, "[") {
+			skipping = false
+		}
+
+		if !skipping {
+			result = append(result, line)
+		}
+	}
+	return strings.Join(result, "\n")
 }

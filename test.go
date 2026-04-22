@@ -14,27 +14,57 @@ import (
 // Test prints the contents of the three core tables using the
 // schema you posted (sdk_sessions, observations, session_summaries).
 func main() {
-	// -----------------------------------------------------------------
-	// 1️⃣ Resolve the exact DB path (same as db.InitDB)
-	// -----------------------------------------------------------------
-	home, _ := os.UserHomeDir()
-	dbPath := filepath.Join(home, ".cogito", "cogito.db")
+    // 1️⃣ Resolve the exact DB path
+    home, _ := os.UserHomeDir()
+    dbPath := filepath.Join(home, ".cogito", "cogito.db")
 
-	fmt.Printf("🔍 Inspecting Database: %s\n", dbPath)
-	fmt.Println(strings.Repeat("=", 80))
+    db, err := sql.Open("sqlite", dbPath)
+    if err != nil {
+        log.Fatalf("❌ Could not open database: %v", err)
+    }
+    defer db.Close()
 
-	db, err := sql.Open("sqlite", dbPath)
-	if err != nil {
-		log.Fatalf("❌ Could not open database: %v", err)
-	}
-	defer db.Close()
+    // 2️⃣ Handle "reset" argument
+    if len(os.Args) > 1 && os.Args[1] == "reset" {
+        fmt.Println("⚠️  RESET MODE: Wiping Cogito database...")
 
-	// -----------------------------------------------------------------
-	// 2️⃣ Print each table
-	// -----------------------------------------------------------------
-	printSessions(db)
-	printObservations(db)
-	printSummaries(db)
+        // List of all tables including the FTS virtual table and its helpers
+        tables := []string{
+            "sdk_sessions",
+            "observations",
+            "session_summaries",
+            "observations_fts",
+            "observations_fts_config",
+            "observations_fts_data",
+            "observations_fts_docsize",
+            "observations_fts_idx",
+        }
+
+        for _, table := range tables {
+            _, err := db.Exec(fmt.Sprintf("DROP TABLE IF EXISTS %s;", table))
+            if err != nil {
+                fmt.Printf("❌ Error dropping %s: %v\n", table, err)
+            } else {
+                fmt.Printf("✅ Dropped %s\n", table)
+            }
+        }
+
+        // Also drop the trigger so it can be recreated cleanly
+        db.Exec("DROP TRIGGER IF EXISTS observations_ai;")
+
+        fmt.Println("✨ Database is now empty. Your MCP server will recreate tables on next start.")
+        return
+    }
+
+
+
+    // 3️⃣ Default: Inspection logic
+    fmt.Printf("🔍 Inspecting Database: %s\n", dbPath)
+    fmt.Println(strings.Repeat("=", 80))
+
+    printSessions(db)
+    printObservations(db)
+    printSummaries(db)
 }
 
 // ---------------------------------------------------------------------
@@ -42,12 +72,11 @@ func main() {
 // ---------------------------------------------------------------------
 func printSessions(db *sql.DB) {
 	fmt.Println("\n📂 [SDK_SESSIONS]")
+
 	rows, err := db.Query(`
 		SELECT id,
-		       content_session_id,
+		       session_id,
 		       project,
-		       status,
-		       user_prompt,
 		       started_at,
 		       COALESCE(completed_at, '')
 		FROM sdk_sessions
@@ -59,26 +88,29 @@ func printSessions(db *sql.DB) {
 	}
 	defer rows.Close()
 
-	fmt.Printf("%-4s | %-20s | %-30s | %-10s | %-30s | %-20s | %-20s\n",
-		"ID", "ContentSID", "Project", "Status", "Prompt", "StartedAt", "CompletedAt")
-	fmt.Println(strings.Repeat("-", 120))
+	fmt.Printf("%-4s | %-20s | %-30s | %-20s | %-20s\n",
+		"ID", "SessionID", "Project", "StartedAt", "CompletedAt")
+	fmt.Println(strings.Repeat("-", 100))
 
 	for rows.Next() {
 		var (
-			id               int
-			contentSID, proj string
-			status, prompt   string
-			started, comp    string
+			id        int
+			sessionID string
+			project   string
+			started   string
+			completed string
 		)
 
-		if err := rows.Scan(&id, &contentSID, &proj, &status, &prompt, &started, &comp); err != nil {
+		if err := rows.Scan(&id, &sessionID, &project, &started, &completed); err != nil {
 			fmt.Printf("⚠️  Scan error: %v\n", err)
 			continue
 		}
-		fmt.Printf("%-4d | %-20s | %-30s | %-10s | %-30.30s | %-20s | %-20s\n",
-			id, contentSID, proj, status, prompt, started, comp)
+
+		fmt.Printf("%-4d | %-20s | %-30s | %-20s | %-20s\n",
+			id, sessionID, project, started, completed)
 	}
 }
+
 
 // ---------------------------------------------------------------------
 // 3️⃣ Observations (observations)
