@@ -6,19 +6,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/DeepanshuChaid/Cogito-Ai.git/internals/models/schemaModels"
 )
 
-
-var currentSession *schemaModels.Session
-
-// 🔥 SHORT + AGGRESSIVE = WORKS
-const CAVEMAN_CORE = `
-Terse like caveman. Technical substance exact.
-No fluff. No filler. No pleasantries.
-Fragments OK. Short sentences.
-ALWAYS ACTIVE.
-`
 
 
 func ServeMcp() {

@@ -31,6 +31,10 @@ func main() {
 			commands.Install()
 			return
 
+		case "build-map":
+			commands.BuildMap()
+			return
+
 		case "config":
 			commands.HandleConfig()
 			return

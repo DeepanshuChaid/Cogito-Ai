@@ -6,7 +6,21 @@ import (
 	"strings"
 
 	"github.com/DeepanshuChaid/Cogito-Ai.git/internals/db"
+	"github.com/DeepanshuChaid/Cogito-Ai.git/internals/models/schemaModels"
 )
+
+
+var currentSession *schemaModels.Session
+
+// 🔥 SHORT + AGGRESSIVE = WORKS
+const CAVEMAN_CORE = `
+Terse like caveman. Technical substance exact.
+No fluff. No filler. No pleasantries.
+Fragments OK. Short sentences.
+ALWAYS ACTIVE.
+
+Use get_codebase_map to understand project structure. When asked to Fix anything or just asked anything related to codebase, use it. It is your best friend. It is your only friend.
+`
 
 func handleRequest(req JSONRPCRequest) interface{} {
 
@@ -42,14 +56,11 @@ func handleRequest(req JSONRPCRequest) interface{} {
 			"instructions": CAVEMAN_CORE,
 		}
 
-		//==============================================
-		//==============================================
+	//==============================================
 	case "initialized":
 		return map[string]interface{}{}
 
-		//==============================================
-		//==============================================
-		//==============================================
+	//==============================================
 	case "tools/list":
 		return map[string]interface{}{
 			"tools": []map[string]interface{}{
@@ -77,9 +88,7 @@ func handleRequest(req JSONRPCRequest) interface{} {
 			},
 		}
 
-		//==============================================
-		//==============================================
-		//==============================================
+	//==============================================
 	case "prompts/list":
 		return map[string]interface{}{
 			"prompts": []map[string]interface{}{
@@ -90,9 +99,7 @@ func handleRequest(req JSONRPCRequest) interface{} {
 			},
 		}
 
-		//==============================================
-		//==============================================
-		//==============================================
+	//==============================================
 	case "prompts/get":
 		name, _ := req.Params["name"].(string)
 
@@ -118,9 +125,7 @@ func handleRequest(req JSONRPCRequest) interface{} {
 
 		return errorResponse(-32601, "prompt not found")
 
-		//==============================================
-		//==============================================
-		//==============================================
+	//==============================================
 	case "tools/call":
 		name, _ := req.Params["name"].(string)
 

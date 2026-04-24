@@ -1,0 +1,582 @@
+{
+  "files": [
+    {
+      "path": "cmd\\cogito\\main.go",
+      "package": "main",
+      "imports": [
+        "bytes",
+        "encoding/json",
+        "fmt",
+        "io",
+        "os",
+        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/commands",
+        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/config",
+        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/db",
+        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/injector",
+        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/utils/welcomeUi",
+        "github.com/DeepanshuChaid/Cogito-Ai.git/mcpServer"
+      ],
+      "functions": [
+        "main",
+        "HandleHook"
+      ],
+      "structs": null,
+      "interfaces": null,
+      "methods": null
+    },
+    {
+      "path": "internals\\adapters\\adapter.go",
+      "package": "adapters",
+      "imports": [
+        "github.com/DeepanshuChaid/Cogito-Ai.git/pkg/types"
+      ],
+      "functions": [
+        "GetAdapter"
+      ],
+      "structs": null,
+      "interfaces": [
+        "Adapter"
+      ],
+      "methods": null
+    },
+    {
+      "path": "internals\\adapters\\claude.go",
+      "package": "adapters",
+      "imports": [
+        "encoding/json",
+        "github.com/DeepanshuChaid/Cogito-Ai.git/pkg/types"
+      ],
+      "functions": [
+        "mapify"
+      ],
+      "structs": [
+        "ClaudeAdapter",
+        "claudeInput"
+      ],
+      "interfaces": null,
+      "methods": [
+        {
+          "receiver": "ClaudeAdapter",
+          "name": "Name"
+        },
+        {
+          "receiver": "ClaudeAdapter",
+          "name": "ParseInput"
+        },
+        {
+          "receiver": "ClaudeAdapter",
+          "name": "FormatOutput"
+        },
+        {
+          "receiver": "ClaudeAdapter",
+          "name": "GetHookEvent"
+        }
+      ]
+    },
+    {
+      "path": "internals\\adapters\\codex.go",
+      "package": "adapters",
+      "imports": null,
+      "functions": null,
+      "structs": null,
+      "interfaces": null,
+      "methods": null
+    },
+    {
+      "path": "internals\\adapters\\cursor.go",
+      "package": "adapters",
+      "imports": null,
+      "functions": null,
+      "structs": null,
+      "interfaces": null,
+      "methods": null
+    },
+    {
+      "path": "internals\\adapters\\gemini.go",
+      "package": "adapters",
+      "imports": null,
+      "functions": null,
+      "structs": null,
+      "interfaces": null,
+      "methods": null
+    },
+    {
+      "path": "internals\\commands\\buildMap.go",
+      "package": "commands",
+      "imports": [
+        "encoding/json",
+        "fmt",
+        "go/ast",
+        "go/parser",
+        "go/token",
+        "os",
+        "path/filepath",
+        "strings"
+      ],
+      "functions": [
+        "BuildMap",
+        "parseGoFile"
+      ],
+      "structs": [
+        "FileMap",
+        "Method",
+        "CodebaseMap"
+      ],
+      "interfaces": null,
+      "methods": null
+    },
+    {
+      "path": "internals\\commands\\handleConfig.go",
+      "package": "commands",
+      "imports": [
+        "fmt",
+        "os",
+        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/config"
+      ],
+      "functions": [
+        "HandleConfig",
+        "printHelp",
+        "handleGet",
+        "handleSet",
+        "handleList"
+      ],
+      "structs": null,
+      "interfaces": null,
+      "methods": null
+    },
+    {
+      "path": "internals\\commands\\handleHooks.go",
+      "package": "commands",
+      "imports": [
+        "bytes",
+        "encoding/json",
+        "fmt",
+        "io",
+        "net/http",
+        "os",
+        "path/filepath",
+        "strings",
+        "time",
+        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/config",
+        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/db",
+        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/injector"
+      ],
+      "functions": [
+        "HandleHooks",
+        "handleSessionStart",
+        "handleToolUse",
+        "handleSessionEnd",
+        "shouldSaveObservation",
+        "categorizeObservation",
+        "extractFiles",
+        "getActionSummary"
+      ],
+      "structs": null,
+      "interfaces": null,
+      "methods": null
+    },
+    {
+      "path": "internals\\commands\\help.go",
+      "package": "commands",
+      "imports": [
+        "fmt"
+      ],
+      "functions": [
+        "Help"
+      ],
+      "structs": null,
+      "interfaces": null,
+      "methods": null
+    },
+    {
+      "path": "internals\\commands\\install.go",
+      "package": "commands",
+      "imports": [
+        "fmt",
+        "os",
+        "path/filepath",
+        "strings",
+        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/utils/skills"
+      ],
+      "functions": [
+        "Install",
+        "upsertCodexMCPServer",
+        "stripCogitoMCPBlock"
+      ],
+      "structs": null,
+      "interfaces": null,
+      "methods": null
+    },
+    {
+      "path": "internals\\commands\\uninstall.go",
+      "package": "commands",
+      "imports": [
+        "fmt",
+        "os",
+        "path/filepath"
+      ],
+      "functions": [
+        "Uninstall"
+      ],
+      "structs": null,
+      "interfaces": null,
+      "methods": null
+    },
+    {
+      "path": "internals\\commands\\unkown.go",
+      "package": "commands",
+      "imports": [
+        "fmt"
+      ],
+      "functions": [
+        "Unknown"
+      ],
+      "structs": null,
+      "interfaces": null,
+      "methods": null
+    },
+    {
+      "path": "internals\\commands\\version.go",
+      "package": "commands",
+      "imports": [
+        "fmt"
+      ],
+      "functions": [
+        "Version"
+      ],
+      "structs": null,
+      "interfaces": null,
+      "methods": null
+    },
+    {
+      "path": "internals\\compress\\compress.go",
+      "package": "compress",
+      "imports": null,
+      "functions": null,
+      "structs": null,
+      "interfaces": null,
+      "methods": null
+    },
+    {
+      "path": "internals\\compressor\\ollama.go",
+      "package": "compressor",
+      "imports": null,
+      "functions": null,
+      "structs": null,
+      "interfaces": null,
+      "methods": null
+    },
+    {
+      "path": "internals\\config\\config.go",
+      "package": "config",
+      "imports": [
+        "encoding/json",
+        "os",
+        "path/filepath"
+      ],
+      "functions": [
+        "defaultConfig",
+        "GetConfigPath",
+        "GetConfigPathForDir",
+        "Load",
+        "LoadForDir",
+        "Save",
+        "IsValid"
+      ],
+      "structs": [
+        "Config"
+      ],
+      "interfaces": null,
+      "methods": null
+    },
+    {
+      "path": "internals\\context\\context.go",
+      "package": "context",
+      "imports": null,
+      "functions": null,
+      "structs": null,
+      "interfaces": null,
+      "methods": null
+    },
+    {
+      "path": "internals\\db\\db.go",
+      "package": "db",
+      "imports": [
+        "database/sql",
+        "embed",
+        "fmt",
+        "os",
+        "path/filepath",
+        "strings",
+        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/models/schemaModels",
+        "modernc.org/sqlite"
+      ],
+      "functions": [
+        "resolveDBPath",
+        "InitDB",
+        "GetAllMemories"
+      ],
+      "structs": null,
+      "interfaces": null,
+      "methods": null
+    },
+    {
+      "path": "internals\\db\\observations.go",
+      "package": "db",
+      "imports": [
+        "strings",
+        "sync",
+        "time",
+        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/models/schemaModels"
+      ],
+      "functions": [
+        "CreateObservation",
+        "GetRecentObservations",
+        "GetObservationTeasers",
+        "FastSearch",
+        "SearchObservationsFTS"
+      ],
+      "structs": [
+        "ObservationCache"
+      ],
+      "interfaces": null,
+      "methods": [
+        {
+          "receiver": "ObservationCache",
+          "name": "Set"
+        },
+        {
+          "receiver": "ObservationCache",
+          "name": "Get"
+        },
+        {
+          "receiver": "ObservationCache",
+          "name": "Append"
+        }
+      ]
+    },
+    {
+      "path": "internals\\db\\pendingQueue.go",
+      "package": "db",
+      "imports": [
+        "log",
+        "time",
+        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/models/schemaModels"
+      ],
+      "functions": [
+        "GetProjectBySession",
+        "StartPendingWorker",
+        "CreatePendingObservation",
+        "GetUnprocessedObservations",
+        "MarkObservationProcessed"
+      ],
+      "structs": null,
+      "interfaces": null,
+      "methods": null
+    },
+    {
+      "path": "internals\\db\\sessions.go",
+      "package": "db",
+      "imports": [
+        "database/sql",
+        "time",
+        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/models/schemaModels"
+      ],
+      "functions": [
+        "InitializeProjectSession",
+        "UpdateMemorySessionID",
+        "CompleteSession"
+      ],
+      "structs": null,
+      "interfaces": null,
+      "methods": null
+    },
+    {
+      "path": "internals\\db\\summaries.go",
+      "package": "db",
+      "imports": [
+        "database/sql",
+        "time",
+        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/models/schemaModels"
+      ],
+      "functions": [
+        "CreateSessionSummary",
+        "GetLatestSessionSummary"
+      ],
+      "structs": null,
+      "interfaces": null,
+      "methods": null
+    },
+    {
+      "path": "internals\\injector\\injector.go",
+      "package": "injector",
+      "imports": [
+        "strings",
+        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/config"
+      ],
+      "functions": [
+        "BuildFinalPrompt"
+      ],
+      "structs": null,
+      "interfaces": null,
+      "methods": null
+    },
+    {
+      "path": "internals\\models\\schemaModels\\schemaModels.go",
+      "package": "schemaModels",
+      "imports": [
+        "time"
+      ],
+      "functions": null,
+      "structs": [
+        "Project",
+        "Session",
+        "PendingObservation",
+        "Observation",
+        "ObservationTeaser",
+        "ObservationSearchResult",
+        "SessionSummary"
+      ],
+      "interfaces": null,
+      "methods": null
+    },
+    {
+      "path": "internals\\utils\\skills\\skills.go",
+      "package": "skills",
+      "imports": [
+        "os",
+        "path/filepath",
+        "fmt"
+      ],
+      "functions": [
+        "CreateSkills"
+      ],
+      "structs": null,
+      "interfaces": null,
+      "methods": null
+    },
+    {
+      "path": "internals\\utils\\welcomeUi\\welcomeUi.go",
+      "package": "welcomeUi",
+      "imports": [
+        "fmt",
+        "github.com/charmbracelet/lipgloss",
+        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/config"
+      ],
+      "functions": [
+        "ShowWelcomeUI"
+      ],
+      "structs": null,
+      "interfaces": null,
+      "methods": null
+    },
+    {
+      "path": "mcpServer\\handleRequest.go",
+      "package": "mcpServer",
+      "imports": [
+        "os",
+        "path/filepath",
+        "strings",
+        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/db",
+        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/models/schemaModels"
+      ],
+      "functions": [
+        "handleRequest"
+      ],
+      "structs": null,
+      "interfaces": null,
+      "methods": null
+    },
+    {
+      "path": "mcpServer\\mcpServer.go",
+      "package": "mcpServer",
+      "imports": [
+        "bufio",
+        "encoding/json",
+        "fmt",
+        "os"
+      ],
+      "functions": [
+        "ServeMcp"
+      ],
+      "structs": null,
+      "interfaces": null,
+      "methods": null
+    },
+    {
+      "path": "mcpServer\\types.go",
+      "package": "mcpServer",
+      "imports": [
+        "encoding/json"
+      ],
+      "functions": null,
+      "structs": [
+        "JSONRPCRequest",
+        "JSONRPCResponse"
+      ],
+      "interfaces": null,
+      "methods": null
+    },
+    {
+      "path": "mcpServer\\utils.go",
+      "package": "mcpServer",
+      "imports": [
+        "bytes",
+        "crypto/rand",
+        "encoding/hex",
+        "fmt",
+        "os/exec",
+        "regexp",
+        "strings",
+        "time"
+      ],
+      "functions": [
+        "errorResponse",
+        "validateOutput",
+        "trimInput",
+        "runCaveman",
+        "callModel",
+        "cleanOutput",
+        "newSessionID"
+      ],
+      "structs": null,
+      "interfaces": null,
+      "methods": null
+    },
+    {
+      "path": "pkg\\types\\types.go",
+      "package": "types",
+      "imports": null,
+      "functions": null,
+      "structs": [
+        "HookInput",
+        "HookOutput",
+        "Config"
+      ],
+      "interfaces": null,
+      "methods": null
+    },
+    {
+      "path": "test.go",
+      "package": "main",
+      "imports": [
+        "database/sql",
+        "fmt",
+        "log",
+        "os",
+        "path/filepath",
+        "strings",
+        "modernc.org/sqlite"
+      ],
+      "functions": [
+        "main",
+        "printSessions",
+        "printObservations",
+        "printSummaries"
+      ],
+      "structs": null,
+      "interfaces": null,
+      "methods": null
+    }
+  ]
+}
