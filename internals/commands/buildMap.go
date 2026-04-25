@@ -13,20 +13,24 @@ import (
 )
 
 type FileMap struct {
-	Path       string         `json:"path,omitempty"`
-	Importance int            `json:"importance,omitempty"`
-	Role       string         `json:"role,omitempty"`
-	Summary    string         `json:"summary,omitempty"`
-	Package    string         `json:"package,omitempty"`
-	Imports    []string       `json:"imports,omitempty"`
-	Functions  []Function     `json:"functions,omitempty"`
-	Structs    []string       `json:"structs,omitempty"`
-	Interfaces []string       `json:"interfaces,omitempty"`
-	Methods    []Method       `json:"methods,omitempty"`
-	Language   string         `json:"language,omitempty"`
-	Classes    []string       `json:"classes,omitempty"`
-	Calls      []CallRelation `json:"calls,omitempty"`
-	Ignore     bool           `json:"ignore,omitempty"`
+	Path           string   `json:"path,omitempty"`
+	Importance     int      `json:"importance,omitempty"`
+	Role           string   `json:"role,omitempty"`
+	Summary        string   `json:"summary,omitempty"`
+	KeyFunctions   []string `json:"key_functions,omitempty"`
+	ImportantCalls []string `json:"important_calls,omitempty"`
+
+	// Internal processing fields
+	Package    string         `json:"-"`
+	Imports    []string       `json:"-"`
+	Functions  []Function     `json:"-"`
+	Structs    []string       `json:"-"`
+	Interfaces []string       `json:"-"`
+	Methods    []Method       `json:"-"`
+	Language   string         `json:"-"`
+	Classes    []string       `json:"-"`
+	Calls      []CallRelation `json:"-"`
+	Ignore     bool           `json:"-"`
 }
 
 type CallRelation struct {
@@ -45,14 +49,11 @@ type Method struct {
 	Name     string `json:"name,omitempty"`
 }
 
-type ExecutionFlow struct {
-	Name  string   `json:"name,omitempty"`
-	Steps []string `json:"steps,omitempty"`
-}
-
 type CodebaseMap struct {
-	Files []FileMap       `json:"files,omitempty"`
-	Flows []ExecutionFlow `json:"flows,omitempty"`
+	Entrypoints []string          `json:"entrypoints,omitempty"`
+	StateMap    map[string]string `json:"state_map,omitempty"`
+	Files       []FileMap         `json:"files,omitempty"`
+	Flows       []string          `json:"flows,omitempty"`
 }
 
 func BuildMap() {
@@ -70,12 +71,7 @@ func BuildMap() {
 		if info.IsDir() {
 			name := info.Name()
 
-			if name == ".git" ||
-				name == "vendor" ||
-				name == "node_modules" ||
-				name == "dist" ||
-				name == "build" ||
-				name == ".cogito" {
+			if ShouldSkipDir(name) {
 				return filepath.SkipDir
 			}
 
@@ -99,9 +95,6 @@ func BuildMap() {
 		}
 
 		fileMap := parseFile(path)
-
-		// Post-process file
-		fileMap.Importance = calculateImportance(&fileMap)
 		fileMap.Role = classifyRole(path, &fileMap)
 		fileMap.Ignore = isIgnoreZone(path)
 
@@ -109,6 +102,70 @@ func BuildMap() {
 
 		return nil
 	})
+
+	// Pass 2: Calculate global metrics and high-signal structures
+	inboundCalls := make(map[string]int)
+	funcToFile := make(map[string]string)
+	stateMap := make(map[string]string)
+	entrypoints := []string{}
+
+	for _, f := range result.Files {
+		if isEntryPoint(f.Path, &f) {
+			entrypoints = append(entrypoints, f.Path)
+		}
+		for _, fn := range f.Functions {
+			funcToFile[fn.Name] = f.Path
+		}
+		// Detect state ownership
+		role := classifyRole(f.Path, &f)
+		if role == "state-manager" || role == "persistence-layer" || role == "config-layer" {
+			key := "data"
+			if strings.Contains(f.Path, "session") {
+				key = "sessions"
+			} else if strings.Contains(f.Path, "observation") || strings.Contains(f.Path, "memory") {
+				key = "memory"
+			} else if strings.Contains(f.Path, "config") {
+				key = "config"
+			}
+			stateMap[key] = f.Path
+		}
+	}
+
+	for _, f := range result.Files {
+		for _, call := range f.Calls {
+			if targetPath, ok := funcToFile[call.To]; ok {
+				if targetPath != f.Path {
+					inboundCalls[targetPath]++
+				}
+			}
+		}
+	}
+
+	// Update importance and roles
+	for i := range result.Files {
+		f := &result.Files[i]
+		f.Role = classifyRole(f.Path, f) // Re-classify with full context
+		f.Importance = calculateImportance(f, inboundCalls[f.Path])
+
+		// Signal logic
+		for _, fn := range f.Functions {
+			if isHighSignalFunc(fn.Name) {
+				f.KeyFunctions = append(f.KeyFunctions, fn.Name)
+			}
+		}
+		uniqueCalls := make(map[string]bool)
+		for _, call := range f.Calls {
+			if _, ok := funcToFile[call.To]; ok {
+				if !uniqueCalls[call.To] {
+					f.ImportantCalls = append(f.ImportantCalls, call.To)
+					uniqueCalls[call.To] = true
+				}
+			}
+		}
+	}
+
+	result.Entrypoints = entrypoints
+	result.StateMap = stateMap
 
 	// Sort files by importance (descending)
 	sort.Slice(result.Files, func(i, j int) bool {
@@ -523,32 +580,43 @@ func isLowValueCall(name string) bool {
 	return lowValue[name]
 }
 
-func calculateImportance(f *FileMap) int {
+func calculateImportance(f *FileMap, inboundCount int) int {
 	if isEntryPoint(f.Path, f) {
-		return 10
+		return 100
 	}
 
-	score := 1
-	score += len(f.Functions)
-	score += len(f.Structs) * 2
-	score += len(f.Interfaces) * 3
-
-	// Boost for exported items
-	for _, fn := range f.Functions {
-		if len(fn.Name) > 0 && fn.Name[0] >= 'A' && fn.Name[0] <= 'Z' {
-			score += 2
-		}
+	score := 10
+	switch f.Role {
+	case "state-manager", "persistence-layer":
+		score = 80
+	case "orchestrator", "request-handler":
+		score = 60
+	case "external-adapter":
+		score = 40
+	case "config-layer", "ui-layer":
+		score = 30
+	case "memory-layer":
+		score = 70
 	}
 
-	// Boost for other potential entrypoints or high-level cmd files
-	if strings.Contains(f.Path, "cmd/") || strings.Contains(f.Path, "main") {
-		score += 5
+	// Add dynamic metrics
+	score += inboundCount * 5 // Fan-in weight
+	score += len(f.ImportantCalls) * 2 // Fan-out weight
+
+	// Boost for key functions
+	score += len(f.KeyFunctions) * 2
+
+	// Final caps per tier
+	if f.Role == "utility" && score > 30 {
+		score = 30
+	}
+	if score > 95 && !isEntryPoint(f.Path, f) {
+		score = 95
+	}
+	if score < 10 {
+		score = 10
 	}
 
-	// Cap at 10
-	if score > 10 {
-		return 10
-	}
 	return score
 }
 
@@ -558,34 +626,51 @@ func classifyRole(path string, f *FileMap) string {
 	}
 
 	p := strings.ToLower(path)
-	if strings.Contains(p, "db/") || strings.Contains(p, "database") || strings.Contains(p, "repository") {
-		return "database"
-	}
-	if strings.Contains(p, "mcp") {
-		return "mcp-server"
-	}
+
+	// State and Persistence
 	if strings.Contains(p, "session") {
-		return "session-manager"
+		return "state-manager"
 	}
-	if strings.Contains(p, "worker") || strings.Contains(p, "job") {
-		return "worker"
-	}
-	if strings.Contains(p, "adapter") {
-		return "adapter"
+	if strings.Contains(p, "db/") || strings.Contains(p, "database") || strings.Contains(p, "repository") {
+		return "persistence-layer"
 	}
 	if strings.Contains(p, "config") {
-		return "config"
+		return "config-layer"
 	}
-	if strings.Contains(p, "ui") || strings.Contains(p, "frontend") {
-		return "ui"
+
+	// AI and Memory
+	if strings.Contains(p, "compress") || strings.Contains(p, "prompt") || strings.Contains(p, "memory") || strings.Contains(p, "observation") {
+		return "memory-layer"
 	}
-	if strings.Contains(p, "api") || strings.Contains(p, "handler") {
-		return "api-layer"
+	if strings.Contains(p, "adapter") {
+		return "external-adapter"
+	}
+
+	// Orchestration and Handling
+	if strings.Contains(p, "handler") || strings.Contains(p, "serve") || strings.Contains(p, "mcp") {
+		if strings.Contains(p, "handle") {
+			return "request-handler"
+		}
+		return "orchestrator"
+	}
+	if strings.Contains(p, "worker") || strings.Contains(p, "job") {
+		return "worker/background-job"
+	}
+
+	// UI and Injection
+	if strings.Contains(p, "ui") || strings.Contains(p, "frontend") || strings.Contains(p, "welcome") {
+		return "ui-layer"
 	}
 	if strings.Contains(p, "inject") || strings.Contains(p, "container") {
 		return "injector"
 	}
-	return "logic"
+
+	// Logic vs Utility
+	if len(f.KeyFunctions) > 2 {
+		return "orchestrator"
+	}
+
+	return "utility"
 }
 
 func isIgnoreZone(path string) bool {
@@ -598,43 +683,63 @@ func isIgnoreZone(path string) bool {
 		strings.Contains(p, "debug")
 }
 
-func generateExecutionFlows(files []FileMap) []ExecutionFlow {
-	var flows []ExecutionFlow
+func generateExecutionFlows(files []FileMap) []string {
+	var flows []string
 
-	// Heuristic: Build major paths
-	// 1. CLI Execution (main -> internals)
-	cliFlow := ExecutionFlow{Name: "CLI Execution"}
+	// 1. CLI Execution Path
 	for _, f := range files {
-		if strings.HasSuffix(f.Path, "main.go") {
-			cliFlow.Steps = append(cliFlow.Steps, "main")
-			for _, call := range f.Calls {
-				cliFlow.Steps = append(cliFlow.Steps, call.To)
-			}
-			break
-		}
-	}
-	if len(cliFlow.Steps) > 1 {
-		flows = append(flows, cliFlow)
-	}
-
-	// 2. Build Map Flow (BuildMap -> parse -> post-process)
-	buildFlow := ExecutionFlow{Name: "Build Map Flow"}
-	for _, f := range files {
-		if strings.Contains(f.Path, "buildMap.go") {
-			buildFlow.Steps = append(buildFlow.Steps, "BuildMap")
-			for _, fn := range f.Functions {
-				if strings.HasPrefix(fn.Name, "parse") || strings.HasPrefix(fn.Name, "calculate") {
-					buildFlow.Steps = append(buildFlow.Steps, fn.Name)
+		if strings.Contains(f.Path, "main.go") && !strings.Contains(f.Path, "test") {
+			steps := []string{"CLI Entry"}
+			for _, call := range f.ImportantCalls {
+				if isHighSignalFunc(call) {
+					steps = append(steps, call)
 				}
 			}
-			break
+			flows = append(flows, "CLI Pipeline: "+strings.Join(steps, " → "))
 		}
 	}
-	if len(buildFlow.Steps) > 1 {
-		flows = append(flows, buildFlow)
+
+	// 2. MCP / Request Path
+	for _, f := range files {
+		if strings.Contains(f.Path, "mcpServer") && (strings.Contains(f.Path, "mcp") || strings.Contains(f.Path, "handle")) {
+			steps := []string{"MCP Request"}
+			for _, fn := range f.KeyFunctions {
+				if strings.Contains(strings.ToLower(fn), "handle") || strings.Contains(strings.ToLower(fn), "serve") {
+					steps = append(steps, fn)
+				}
+			}
+			if len(steps) > 1 {
+				flows = append(flows, "MCP Server Flow: "+strings.Join(steps, " → "))
+			}
+		}
+	}
+
+	// 3. Memory / Hook Pipeline
+	for _, f := range files {
+		if strings.Contains(f.Path, "handleHooks") || strings.Contains(f.Path, "injector") {
+			steps := []string{"Session Lifecycle"}
+			for _, call := range f.ImportantCalls {
+				if strings.Contains(call, "Prompt") || strings.Contains(call, "Memory") || strings.Contains(call, "Session") {
+					steps = append(steps, call)
+				}
+			}
+			if len(steps) > 1 {
+				flows = append(flows, "Memory Intelligence Flow: "+strings.Join(steps, " → "))
+			}
+		}
 	}
 
 	return flows
+}
+
+func isHighSignalFunc(name string) bool {
+	if len(name) == 0 || name[0] < 'A' || name[0] > 'Z' {
+		return false
+	}
+	noise := map[string]bool{
+		"String": true, "Error": true, "Len": true, "Cap": true,
+	}
+	return !noise[name]
 }
 
 func isEntryPoint(path string, f *FileMap) bool {
@@ -649,7 +754,9 @@ func isEntryPoint(path string, f *FileMap) bool {
 	if strings.HasPrefix(p, "index.") ||
 		strings.HasPrefix(p, "server.") ||
 		strings.HasPrefix(p, "app.") ||
-		strings.HasPrefix(p, "main.") {
+		strings.HasPrefix(p, "main.") ||
+		strings.Contains(p, "mcpserver") ||
+		strings.Contains(p, "handlerequest") {
 		return true
 	}
 

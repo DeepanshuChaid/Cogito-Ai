@@ -1,2977 +1,25 @@
 {
+  "entrypoints": [
+    "cmd\\cogito\\main.go",
+    "mcpServer\\handleRequest.go",
+    "mcpServer\\mcpServer.go",
+    "test.go"
+  ],
+  "state_map": {
+    "config": "internals\\config\\config.go",
+    "data": "internals\\commands\\handleConfig.go",
+    "sessions": "internals\\db\\sessions.go"
+  },
   "files": [
     {
       "path": "cmd\\cogito\\main.go",
-      "importance": 10,
+      "importance": 100,
       "role": "entrypoint",
-      "package": "main",
-      "imports": [
-        "bytes",
-        "encoding/json",
-        "fmt",
-        "io",
-        "os",
-        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/commands",
-        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/config",
-        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/db",
-        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/injector",
-        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/utils/welcomeUi",
-        "github.com/DeepanshuChaid/Cogito-Ai.git/mcpServer"
+      "key_functions": [
+        "HandleHook"
       ],
-      "functions": [
-        {
-          "name": "main",
-          "line": 18
-        },
-        {
-          "name": "HandleHook",
-          "line": 90
-        }
-      ],
-      "calls": [
-        {
-          "from": "main",
-          "to": "InitDB"
-        },
-        {
-          "from": "main",
-          "to": "Fprintf"
-        },
-        {
-          "from": "main",
-          "to": "Install"
-        },
-        {
-          "from": "main",
-          "to": "BuildMap"
-        },
-        {
-          "from": "main",
-          "to": "HandleConfig"
-        },
-        {
-          "from": "main",
-          "to": "Help"
-        },
-        {
-          "from": "main",
-          "to": "Uninstall"
-        },
-        {
-          "from": "main",
-          "to": "Version"
-        },
-        {
-          "from": "main",
-          "to": "HandleHooks"
-        },
-        {
-          "from": "main",
-          "to": "ServeMcp"
-        },
-        {
-          "from": "main",
-          "to": "Getwd"
-        },
-        {
-          "from": "main",
-          "to": "Getppid"
-        },
-        {
-          "from": "main",
-          "to": "InitializeProjectSession"
-        },
-        {
-          "from": "main",
-          "to": "Fprintf"
-        },
-        {
-          "from": "main",
-          "to": "Unknown"
-        },
-        {
-          "from": "main",
-          "to": "ShowWelcomeUI"
-        },
-        {
-          "from": "HandleHook",
-          "to": "Stat"
-        },
-        {
-          "from": "HandleHook",
-          "to": "Mode"
-        },
-        {
-          "from": "HandleHook",
-          "to": "ShowWelcomeUI"
-        },
-        {
-          "from": "HandleHook",
-          "to": "ReadAll"
-        },
-        {
-          "from": "HandleHook",
-          "to": "Fprintf"
-        },
-        {
-          "from": "HandleHook",
-          "to": "ReplaceAll"
-        },
-        {
-          "from": "HandleHook",
-          "to": "ReplaceAll"
-        },
-        {
-          "from": "HandleHook",
-          "to": "TrimPrefix"
-        },
-        {
-          "from": "HandleHook",
-          "to": "Unmarshal"
-        },
-        {
-          "from": "HandleHook",
-          "to": "Fprintf"
-        },
-        {
-          "from": "HandleHook",
-          "to": "Load"
-        },
-        {
-          "from": "HandleHook",
-          "to": "Fprintf"
-        },
-        {
-          "from": "HandleHook",
-          "to": "Fprintf"
-        },
-        {
-          "from": "HandleHook",
-          "to": "Getwd"
-        },
-        {
-          "from": "HandleHook",
-          "to": "GetAllMemories"
-        },
-        {
-          "from": "HandleHook",
-          "to": "BuildFinalPrompt"
-        },
-        {
-          "from": "HandleHook",
-          "to": "Marshal"
-        }
-      ]
-    },
-    {
-      "path": "internals\\commands\\buildMap.go",
-      "importance": 10,
-      "role": "ui",
-      "package": "commands",
-      "imports": [
-        "encoding/json",
-        "fmt",
-        "go/ast",
-        "go/parser",
-        "go/token",
-        "os",
-        "path/filepath",
-        "sort",
-        "strings"
-      ],
-      "functions": [
-        {
-          "name": "BuildMap",
-          "line": 58
-        },
-        {
-          "name": "parseGoFile",
-          "line": 140
-        },
-        {
-          "name": "parseFile",
-          "line": 269
-        },
-        {
-          "name": "parsePythonFile",
-          "line": 292
-        },
-        {
-          "name": "parseJSFile",
-          "line": 346
-        },
-        {
-          "name": "parseJavaFile",
-          "line": 416
-        },
-        {
-          "name": "isLowValueCall",
-          "line": 514
-        },
-        {
-          "name": "calculateImportance",
-          "line": 526
-        },
-        {
-          "name": "classifyRole",
-          "line": 555
-        },
-        {
-          "name": "isIgnoreZone",
-          "line": 591
-        },
-        {
-          "name": "generateExecutionFlows",
-          "line": 601
-        },
-        {
-          "name": "isEntryPoint",
-          "line": 640
-        }
-      ],
-      "structs": [
-        "FileMap",
-        "CallRelation",
-        "Function",
-        "Method",
-        "ExecutionFlow",
-        "CodebaseMap"
-      ],
-      "calls": [
-        {
-          "from": "BuildMap",
-          "to": "Walk"
-        },
-        {
-          "from": "BuildMap",
-          "to": "IsDir"
-        },
-        {
-          "from": "BuildMap",
-          "to": "Name"
-        },
-        {
-          "from": "BuildMap",
-          "to": "ToLower"
-        },
-        {
-          "from": "BuildMap",
-          "to": "Ext"
-        },
-        {
-          "from": "BuildMap",
-          "to": "parseFile"
-        },
-        {
-          "from": "BuildMap",
-          "to": "calculateImportance"
-        },
-        {
-          "from": "BuildMap",
-          "to": "classifyRole"
-        },
-        {
-          "from": "BuildMap",
-          "to": "isIgnoreZone"
-        },
-        {
-          "from": "BuildMap",
-          "to": "Slice"
-        },
-        {
-          "from": "BuildMap",
-          "to": "generateExecutionFlows"
-        },
-        {
-          "from": "BuildMap",
-          "to": "MkdirAll"
-        },
-        {
-          "from": "BuildMap",
-          "to": "Create"
-        },
-        {
-          "from": "BuildMap",
-          "to": "Fprintf"
-        },
-        {
-          "from": "BuildMap",
-          "to": "Close"
-        },
-        {
-          "from": "BuildMap",
-          "to": "NewEncoder"
-        },
-        {
-          "from": "BuildMap",
-          "to": "SetIndent"
-        },
-        {
-          "from": "BuildMap",
-          "to": "Encode"
-        },
-        {
-          "from": "parseGoFile",
-          "to": "NewFileSet"
-        },
-        {
-          "from": "parseGoFile",
-          "to": "ParseFile"
-        },
-        {
-          "from": "parseGoFile",
-          "to": "TrimSpace"
-        },
-        {
-          "from": "parseGoFile",
-          "to": "Text"
-        },
-        {
-          "from": "parseGoFile",
-          "to": "Pos"
-        },
-        {
-          "from": "parseGoFile",
-          "to": "Pos"
-        },
-        {
-          "from": "parseGoFile",
-          "to": "TrimSpace"
-        },
-        {
-          "from": "parseGoFile",
-          "to": "Text"
-        },
-        {
-          "from": "parseGoFile",
-          "to": "Trim"
-        },
-        {
-          "from": "parseGoFile",
-          "to": "Position"
-        },
-        {
-          "from": "parseGoFile",
-          "to": "Pos"
-        },
-        {
-          "from": "parseGoFile",
-          "to": "Inspect"
-        },
-        {
-          "from": "parseGoFile",
-          "to": "isLowValueCall"
-        },
-        {
-          "from": "parseFile",
-          "to": "ToLower"
-        },
-        {
-          "from": "parseFile",
-          "to": "Ext"
-        },
-        {
-          "from": "parseFile",
-          "to": "parseGoFile"
-        },
-        {
-          "from": "parseFile",
-          "to": "parsePythonFile"
-        },
-        {
-          "from": "parseFile",
-          "to": "parseJSFile"
-        },
-        {
-          "from": "parseFile",
-          "to": "parseJavaFile"
-        },
-        {
-          "from": "parsePythonFile",
-          "to": "ReadFile"
-        },
-        {
-          "from": "parsePythonFile",
-          "to": "Split"
-        },
-        {
-          "from": "parsePythonFile",
-          "to": "TrimSpace"
-        },
-        {
-          "from": "parsePythonFile",
-          "to": "HasPrefix"
-        },
-        {
-          "from": "parsePythonFile",
-          "to": "HasPrefix"
-        },
-        {
-          "from": "parsePythonFile",
-          "to": "HasPrefix"
-        },
-        {
-          "from": "parsePythonFile",
-          "to": "HasPrefix"
-        },
-        {
-          "from": "parsePythonFile",
-          "to": "TrimPrefix"
-        },
-        {
-          "from": "parsePythonFile",
-          "to": "TrimPrefix"
-        },
-        {
-          "from": "parsePythonFile",
-          "to": "Split"
-        },
-        {
-          "from": "parsePythonFile",
-          "to": "TrimSpace"
-        },
-        {
-          "from": "parsePythonFile",
-          "to": "HasPrefix"
-        },
-        {
-          "from": "parsePythonFile",
-          "to": "TrimPrefix"
-        },
-        {
-          "from": "parsePythonFile",
-          "to": "Split"
-        },
-        {
-          "from": "parsePythonFile",
-          "to": "Split"
-        },
-        {
-          "from": "parsePythonFile",
-          "to": "TrimSpace"
-        },
-        {
-          "from": "parseJSFile",
-          "to": "ReadFile"
-        },
-        {
-          "from": "parseJSFile",
-          "to": "Split"
-        },
-        {
-          "from": "parseJSFile",
-          "to": "TrimSpace"
-        },
-        {
-          "from": "parseJSFile",
-          "to": "HasPrefix"
-        },
-        {
-          "from": "parseJSFile",
-          "to": "Contains"
-        },
-        {
-          "from": "parseJSFile",
-          "to": "TrimPrefix"
-        },
-        {
-          "from": "parseJSFile",
-          "to": "TrimPrefix"
-        },
-        {
-          "from": "parseJSFile",
-          "to": "HasPrefix"
-        },
-        {
-          "from": "parseJSFile",
-          "to": "Split"
-        },
-        {
-          "from": "parseJSFile",
-          "to": "TrimPrefix"
-        },
-        {
-          "from": "parseJSFile",
-          "to": "TrimSpace"
-        },
-        {
-          "from": "parseJSFile",
-          "to": "Contains"
-        },
-        {
-          "from": "parseJSFile",
-          "to": "Contains"
-        },
-        {
-          "from": "parseJSFile",
-          "to": "Contains"
-        },
-        {
-          "from": "parseJSFile",
-          "to": "Contains"
-        },
-        {
-          "from": "parseJSFile",
-          "to": "Split"
-        },
-        {
-          "from": "parseJSFile",
-          "to": "Fields"
-        },
-        {
-          "from": "parseJSFile",
-          "to": "Contains"
-        },
-        {
-          "from": "parseJSFile",
-          "to": "TrimPrefix"
-        },
-        {
-          "from": "parseJSFile",
-          "to": "TrimPrefix"
-        },
-        {
-          "from": "parseJSFile",
-          "to": "HasPrefix"
-        },
-        {
-          "from": "parseJSFile",
-          "to": "Split"
-        },
-        {
-          "from": "parseJSFile",
-          "to": "TrimPrefix"
-        },
-        {
-          "from": "parseJSFile",
-          "to": "Trim"
-        },
-        {
-          "from": "parseJSFile",
-          "to": "TrimSpace"
-        },
-        {
-          "from": "parseJavaFile",
-          "to": "ReadFile"
-        },
-        {
-          "from": "parseJavaFile",
-          "to": "Split"
-        },
-        {
-          "from": "parseJavaFile",
-          "to": "TrimSpace"
-        },
-        {
-          "from": "parseJavaFile",
-          "to": "HasPrefix"
-        },
-        {
-          "from": "parseJavaFile",
-          "to": "TrimPrefix"
-        },
-        {
-          "from": "parseJavaFile",
-          "to": "TrimSuffix"
-        },
-        {
-          "from": "parseJavaFile",
-          "to": "HasPrefix"
-        },
-        {
-          "from": "parseJavaFile",
-          "to": "TrimPrefix"
-        },
-        {
-          "from": "parseJavaFile",
-          "to": "TrimSuffix"
-        },
-        {
-          "from": "parseJavaFile",
-          "to": "Contains"
-        },
-        {
-          "from": "parseJavaFile",
-          "to": "HasPrefix"
-        },
-        {
-          "from": "parseJavaFile",
-          "to": "Fields"
-        },
-        {
-          "from": "parseJavaFile",
-          "to": "Trim"
-        },
-        {
-          "from": "parseJavaFile",
-          "to": "Contains"
-        },
-        {
-          "from": "parseJavaFile",
-          "to": "HasPrefix"
-        },
-        {
-          "from": "parseJavaFile",
-          "to": "Fields"
-        },
-        {
-          "from": "parseJavaFile",
-          "to": "Trim"
-        },
-        {
-          "from": "parseJavaFile",
-          "to": "Contains"
-        },
-        {
-          "from": "parseJavaFile",
-          "to": "Contains"
-        },
-        {
-          "from": "parseJavaFile",
-          "to": "Contains"
-        },
-        {
-          "from": "parseJavaFile",
-          "to": "Contains"
-        },
-        {
-          "from": "parseJavaFile",
-          "to": "Contains"
-        },
-        {
-          "from": "parseJavaFile",
-          "to": "Contains"
-        },
-        {
-          "from": "parseJavaFile",
-          "to": "Contains"
-        },
-        {
-          "from": "parseJavaFile",
-          "to": "Contains"
-        },
-        {
-          "from": "parseJavaFile",
-          "to": "Split"
-        },
-        {
-          "from": "parseJavaFile",
-          "to": "Fields"
-        },
-        {
-          "from": "calculateImportance",
-          "to": "isEntryPoint"
-        },
-        {
-          "from": "calculateImportance",
-          "to": "Contains"
-        },
-        {
-          "from": "calculateImportance",
-          "to": "Contains"
-        },
-        {
-          "from": "classifyRole",
-          "to": "isEntryPoint"
-        },
-        {
-          "from": "classifyRole",
-          "to": "ToLower"
-        },
-        {
-          "from": "classifyRole",
-          "to": "Contains"
-        },
-        {
-          "from": "classifyRole",
-          "to": "Contains"
-        },
-        {
-          "from": "classifyRole",
-          "to": "Contains"
-        },
-        {
-          "from": "classifyRole",
-          "to": "Contains"
-        },
-        {
-          "from": "classifyRole",
-          "to": "Contains"
-        },
-        {
-          "from": "classifyRole",
-          "to": "Contains"
-        },
-        {
-          "from": "classifyRole",
-          "to": "Contains"
-        },
-        {
-          "from": "classifyRole",
-          "to": "Contains"
-        },
-        {
-          "from": "classifyRole",
-          "to": "Contains"
-        },
-        {
-          "from": "classifyRole",
-          "to": "Contains"
-        },
-        {
-          "from": "classifyRole",
-          "to": "Contains"
-        },
-        {
-          "from": "classifyRole",
-          "to": "Contains"
-        },
-        {
-          "from": "classifyRole",
-          "to": "Contains"
-        },
-        {
-          "from": "classifyRole",
-          "to": "Contains"
-        },
-        {
-          "from": "classifyRole",
-          "to": "Contains"
-        },
-        {
-          "from": "isIgnoreZone",
-          "to": "ToLower"
-        },
-        {
-          "from": "isIgnoreZone",
-          "to": "Contains"
-        },
-        {
-          "from": "isIgnoreZone",
-          "to": "Contains"
-        },
-        {
-          "from": "isIgnoreZone",
-          "to": "Contains"
-        },
-        {
-          "from": "isIgnoreZone",
-          "to": "Contains"
-        },
-        {
-          "from": "isIgnoreZone",
-          "to": "Contains"
-        },
-        {
-          "from": "isIgnoreZone",
-          "to": "Contains"
-        },
-        {
-          "from": "generateExecutionFlows",
-          "to": "HasSuffix"
-        },
-        {
-          "from": "generateExecutionFlows",
-          "to": "Contains"
-        },
-        {
-          "from": "generateExecutionFlows",
-          "to": "HasPrefix"
-        },
-        {
-          "from": "generateExecutionFlows",
-          "to": "HasPrefix"
-        },
-        {
-          "from": "isEntryPoint",
-          "to": "ToLower"
-        },
-        {
-          "from": "isEntryPoint",
-          "to": "Base"
-        },
-        {
-          "from": "isEntryPoint",
-          "to": "HasPrefix"
-        },
-        {
-          "from": "isEntryPoint",
-          "to": "HasPrefix"
-        },
-        {
-          "from": "isEntryPoint",
-          "to": "HasPrefix"
-        },
-        {
-          "from": "isEntryPoint",
-          "to": "HasPrefix"
-        }
-      ]
-    },
-    {
-      "path": "internals\\commands\\handleHooks.go",
-      "importance": 10,
-      "role": "logic",
-      "package": "commands",
-      "imports": [
-        "bytes",
-        "encoding/json",
-        "fmt",
-        "io",
-        "net/http",
-        "os",
-        "path/filepath",
-        "strings",
-        "time",
-        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/config",
-        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/db",
-        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/injector"
-      ],
-      "functions": [
-        {
-          "name": "HandleHooks",
-          "line": 19
-        },
-        {
-          "name": "handleSessionStart",
-          "line": 37
-        },
-        {
-          "name": "handleToolUse",
-          "line": 127
-        },
-        {
-          "name": "handleSessionEnd",
-          "line": 202
-        },
-        {
-          "name": "shouldSaveObservation",
-          "line": 264
-        },
-        {
-          "name": "categorizeObservation",
-          "line": 280
-        },
-        {
-          "name": "extractFiles",
-          "line": 296
-        },
-        {
-          "name": "getActionSummary",
-          "line": 310
-        }
-      ],
-      "calls": [
-        {
-          "from": "HandleHooks",
-          "to": "handleSessionStart"
-        },
-        {
-          "from": "HandleHooks",
-          "to": "handleToolUse"
-        },
-        {
-          "from": "HandleHooks",
-          "to": "handleSessionEnd"
-        },
-        {
-          "from": "HandleHooks",
-          "to": "Fprintf"
-        },
-        {
-          "from": "handleSessionStart",
-          "to": "ReadAll"
-        },
-        {
-          "from": "handleSessionStart",
-          "to": "Fprintf"
-        },
-        {
-          "from": "handleSessionStart",
-          "to": "UserHomeDir"
-        },
-        {
-          "from": "handleSessionStart",
-          "to": "Join"
-        },
-        {
-          "from": "handleSessionStart",
-          "to": "WriteFile"
-        },
-        {
-          "from": "handleSessionStart",
-          "to": "Get"
-        },
-        {
-          "from": "handleSessionStart",
-          "to": "OpenFile"
-        },
-        {
-          "from": "handleSessionStart",
-          "to": "Fprintf"
-        },
-        {
-          "from": "handleSessionStart",
-          "to": "Close"
-        },
-        {
-          "from": "handleSessionStart",
-          "to": "TrimPrefix"
-        },
-        {
-          "from": "handleSessionStart",
-          "to": "ReplaceAll"
-        },
-        {
-          "from": "handleSessionStart",
-          "to": "ReplaceAll"
-        },
-        {
-          "from": "handleSessionStart",
-          "to": "Unmarshal"
-        },
-        {
-          "from": "handleSessionStart",
-          "to": "Fprintf"
-        },
-        {
-          "from": "handleSessionStart",
-          "to": "GetLatestSessionSummary"
-        },
-        {
-          "from": "handleSessionStart",
-          "to": "GetObservationTeasers"
-        },
-        {
-          "from": "handleSessionStart",
-          "to": "WriteString"
-        },
-        {
-          "from": "handleSessionStart",
-          "to": "WriteString"
-        },
-        {
-          "from": "handleSessionStart",
-          "to": "WriteString"
-        },
-        {
-          "from": "handleSessionStart",
-          "to": "WriteString"
-        },
-        {
-          "from": "handleSessionStart",
-          "to": "WriteString"
-        },
-        {
-          "from": "handleSessionStart",
-          "to": "WriteString"
-        },
-        {
-          "from": "handleSessionStart",
-          "to": "WriteString"
-        },
-        {
-          "from": "handleSessionStart",
-          "to": "Len"
-        },
-        {
-          "from": "handleSessionStart",
-          "to": "String"
-        },
-        {
-          "from": "handleSessionStart",
-          "to": "Load"
-        },
-        {
-          "from": "handleSessionStart",
-          "to": "BuildFinalPrompt"
-        },
-        {
-          "from": "handleSessionStart",
-          "to": "Marshal"
-        },
-        {
-          "from": "handleToolUse",
-          "to": "ReadAll"
-        },
-        {
-          "from": "handleToolUse",
-          "to": "Fprintf"
-        },
-        {
-          "from": "handleToolUse",
-          "to": "TrimPrefix"
-        },
-        {
-          "from": "handleToolUse",
-          "to": "ReplaceAll"
-        },
-        {
-          "from": "handleToolUse",
-          "to": "ReplaceAll"
-        },
-        {
-          "from": "handleToolUse",
-          "to": "Unmarshal"
-        },
-        {
-          "from": "handleToolUse",
-          "to": "Fprintf"
-        },
-        {
-          "from": "handleToolUse",
-          "to": "shouldSaveObservation"
-        },
-        {
-          "from": "handleToolUse",
-          "to": "Marshal"
-        },
-        {
-          "from": "handleToolUse",
-          "to": "Marshal"
-        },
-        {
-          "from": "handleSessionEnd",
-          "to": "ReadAll"
-        },
-        {
-          "from": "handleSessionEnd",
-          "to": "Fprintf"
-        },
-        {
-          "from": "handleSessionEnd",
-          "to": "TrimPrefix"
-        },
-        {
-          "from": "handleSessionEnd",
-          "to": "ReplaceAll"
-        },
-        {
-          "from": "handleSessionEnd",
-          "to": "ReplaceAll"
-        },
-        {
-          "from": "handleSessionEnd",
-          "to": "Unmarshal"
-        },
-        {
-          "from": "handleSessionEnd",
-          "to": "Fprintf"
-        },
-        {
-          "from": "handleSessionEnd",
-          "to": "CompleteSession"
-        },
-        {
-          "from": "handleSessionEnd",
-          "to": "Fprintf"
-        },
-        {
-          "from": "handleSessionEnd",
-          "to": "Marshal"
-        },
-        {
-          "from": "shouldSaveObservation",
-          "to": "Contains"
-        },
-        {
-          "from": "shouldSaveObservation",
-          "to": "Contains"
-        },
-        {
-          "from": "shouldSaveObservation",
-          "to": "ToLower"
-        },
-        {
-          "from": "shouldSaveObservation",
-          "to": "Contains"
-        },
-        {
-          "from": "shouldSaveObservation",
-          "to": "ToLower"
-        },
-        {
-          "from": "shouldSaveObservation",
-          "to": "Contains"
-        },
-        {
-          "from": "shouldSaveObservation",
-          "to": "ToLower"
-        },
-        {
-          "from": "categorizeObservation",
-          "to": "Contains"
-        },
-        {
-          "from": "categorizeObservation",
-          "to": "ToLower"
-        },
-        {
-          "from": "categorizeObservation",
-          "to": "Contains"
-        },
-        {
-          "from": "categorizeObservation",
-          "to": "ToLower"
-        },
-        {
-          "from": "categorizeObservation",
-          "to": "Contains"
-        },
-        {
-          "from": "categorizeObservation",
-          "to": "ToLower"
-        },
-        {
-          "from": "categorizeObservation",
-          "to": "Contains"
-        },
-        {
-          "from": "categorizeObservation",
-          "to": "Contains"
-        },
-        {
-          "from": "categorizeObservation",
-          "to": "Contains"
-        },
-        {
-          "from": "categorizeObservation",
-          "to": "ToLower"
-        },
-        {
-          "from": "categorizeObservation",
-          "to": "Contains"
-        },
-        {
-          "from": "categorizeObservation",
-          "to": "ToLower"
-        },
-        {
-          "from": "extractFiles",
-          "to": "Contains"
-        },
-        {
-          "from": "extractFiles",
-          "to": "Contains"
-        },
-        {
-          "from": "extractFiles",
-          "to": "Marshal"
-        }
-      ]
-    },
-    {
-      "path": "internals\\config\\config.go",
-      "importance": 10,
-      "role": "config",
-      "package": "config",
-      "imports": [
-        "encoding/json",
-        "os",
-        "path/filepath"
-      ],
-      "functions": [
-        {
-          "name": "defaultConfig",
-          "line": 22
-        },
-        {
-          "name": "GetConfigPath",
-          "line": 26
-        },
-        {
-          "name": "GetConfigPathForDir",
-          "line": 31
-        },
-        {
-          "name": "Load",
-          "line": 38
-        },
-        {
-          "name": "LoadForDir",
-          "line": 42
-        },
-        {
-          "name": "Save",
-          "line": 63
-        },
-        {
-          "name": "IsValid",
-          "line": 76
-        }
-      ],
-      "structs": [
-        "Config"
-      ],
-      "calls": [
-        {
-          "from": "GetConfigPath",
-          "to": "Getwd"
-        },
-        {
-          "from": "GetConfigPath",
-          "to": "Join"
-        },
-        {
-          "from": "GetConfigPathForDir",
-          "to": "GetConfigPath"
-        },
-        {
-          "from": "GetConfigPathForDir",
-          "to": "Join"
-        },
-        {
-          "from": "Load",
-          "to": "LoadForDir"
-        },
-        {
-          "from": "LoadForDir",
-          "to": "GetConfigPathForDir"
-        },
-        {
-          "from": "LoadForDir",
-          "to": "ReadFile"
-        },
-        {
-          "from": "LoadForDir",
-          "to": "defaultConfig"
-        },
-        {
-          "from": "LoadForDir",
-          "to": "Unmarshal"
-        },
-        {
-          "from": "LoadForDir",
-          "to": "defaultConfig"
-        },
-        {
-          "from": "LoadForDir",
-          "to": "IsValid"
-        },
-        {
-          "from": "Save",
-          "to": "Getwd"
-        },
-        {
-          "from": "Save",
-          "to": "Join"
-        },
-        {
-          "from": "Save",
-          "to": "MkdirAll"
-        },
-        {
-          "from": "Save",
-          "to": "Dir"
-        },
-        {
-          "from": "Save",
-          "to": "MarshalIndent"
-        },
-        {
-          "from": "Save",
-          "to": "WriteFile"
-        }
-      ]
-    },
-    {
-      "path": "internals\\db\\observations.go",
-      "importance": 10,
-      "role": "logic",
-      "package": "db",
-      "imports": [
-        "strings",
-        "sync",
-        "time",
-        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/models/schemaModels"
-      ],
-      "functions": [
-        {
-          "name": "CreateObservation",
-          "line": 44
-        },
-        {
-          "name": "GetRecentObservations",
-          "line": 82
-        },
-        {
-          "name": "GetObservationTeasers",
-          "line": 132
-        },
-        {
-          "name": "FastSearch",
-          "line": 160
-        },
-        {
-          "name": "SearchObservationsFTS",
-          "line": 187
-        }
-      ],
-      "structs": [
-        "ObservationCache"
-      ],
-      "methods": [
-        {
-          "receiver": "ObservationCache",
-          "name": "Set"
-        },
-        {
-          "receiver": "ObservationCache",
-          "name": "Get"
-        },
-        {
-          "receiver": "ObservationCache",
-          "name": "Append"
-        }
-      ],
-      "calls": [
-        {
-          "from": "Set",
-          "to": "Lock"
-        },
-        {
-          "from": "Set",
-          "to": "Unlock"
-        },
-        {
-          "from": "Get",
-          "to": "RLock"
-        },
-        {
-          "from": "Get",
-          "to": "RUnlock"
-        },
-        {
-          "from": "Append",
-          "to": "Lock"
-        },
-        {
-          "from": "Append",
-          "to": "Unlock"
-        },
-        {
-          "from": "CreateObservation",
-          "to": "Now"
-        },
-        {
-          "from": "CreateObservation",
-          "to": "Exec"
-        },
-        {
-          "from": "CreateObservation",
-          "to": "Format"
-        },
-        {
-          "from": "CreateObservation",
-          "to": "LastInsertId"
-        },
-        {
-          "from": "CreateObservation",
-          "to": "Append"
-        },
-        {
-          "from": "GetRecentObservations",
-          "to": "Get"
-        },
-        {
-          "from": "GetRecentObservations",
-          "to": "Query"
-        },
-        {
-          "from": "GetRecentObservations",
-          "to": "Close"
-        },
-        {
-          "from": "GetRecentObservations",
-          "to": "Next"
-        },
-        {
-          "from": "GetRecentObservations",
-          "to": "Scan"
-        },
-        {
-          "from": "GetRecentObservations",
-          "to": "Parse"
-        },
-        {
-          "from": "GetRecentObservations",
-          "to": "Set"
-        },
-        {
-          "from": "GetObservationTeasers",
-          "to": "Query"
-        },
-        {
-          "from": "GetObservationTeasers",
-          "to": "Close"
-        },
-        {
-          "from": "GetObservationTeasers",
-          "to": "Next"
-        },
-        {
-          "from": "GetObservationTeasers",
-          "to": "Scan"
-        },
-        {
-          "from": "FastSearch",
-          "to": "SearchObservationsFTS"
-        },
-        {
-          "from": "FastSearch",
-          "to": "Get"
-        },
-        {
-          "from": "FastSearch",
-          "to": "Contains"
-        },
-        {
-          "from": "FastSearch",
-          "to": "ToLower"
-        },
-        {
-          "from": "FastSearch",
-          "to": "ToLower"
-        },
-        {
-          "from": "SearchObservationsFTS",
-          "to": "Query"
-        },
-        {
-          "from": "SearchObservationsFTS",
-          "to": "Close"
-        },
-        {
-          "from": "SearchObservationsFTS",
-          "to": "Next"
-        },
-        {
-          "from": "SearchObservationsFTS",
-          "to": "Scan"
-        }
-      ]
-    },
-    {
-      "path": "internals\\db\\pendingQueue.go",
-      "importance": 10,
-      "role": "logic",
-      "package": "db",
-      "imports": [
-        "log",
-        "time",
-        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/models/schemaModels"
-      ],
-      "functions": [
-        {
-          "name": "GetProjectBySession",
-          "line": 11
-        },
-        {
-          "name": "StartPendingWorker",
-          "line": 21
-        },
-        {
-          "name": "CreatePendingObservation",
-          "line": 71
-        },
-        {
-          "name": "GetUnprocessedObservations",
-          "line": 83
-        },
-        {
-          "name": "MarkObservationProcessed",
-          "line": 121
-        }
-      ],
-      "calls": [
-        {
-          "from": "GetProjectBySession",
-          "to": "Scan"
-        },
-        {
-          "from": "GetProjectBySession",
-          "to": "QueryRow"
-        },
-        {
-          "from": "StartPendingWorker",
-          "to": "GetUnprocessedObservations"
-        },
-        {
-          "from": "StartPendingWorker",
-          "to": "Sleep"
-        },
-        {
-          "from": "StartPendingWorker",
-          "to": "Sleep"
-        },
-        {
-          "from": "StartPendingWorker",
-          "to": "GetProjectBySession"
-        },
-        {
-          "from": "StartPendingWorker",
-          "to": "CreateObservation"
-        },
-        {
-          "from": "StartPendingWorker",
-          "to": "MarkObservationProcessed"
-        },
-        {
-          "from": "CreatePendingObservation",
-          "to": "Now"
-        },
-        {
-          "from": "CreatePendingObservation",
-          "to": "Exec"
-        },
-        {
-          "from": "CreatePendingObservation",
-          "to": "Format"
-        },
-        {
-          "from": "GetUnprocessedObservations",
-          "to": "Query"
-        },
-        {
-          "from": "GetUnprocessedObservations",
-          "to": "Close"
-        },
-        {
-          "from": "GetUnprocessedObservations",
-          "to": "Next"
-        },
-        {
-          "from": "GetUnprocessedObservations",
-          "to": "Scan"
-        },
-        {
-          "from": "GetUnprocessedObservations",
-          "to": "Parse"
-        },
-        {
-          "from": "MarkObservationProcessed",
-          "to": "Exec"
-        }
-      ]
-    },
-    {
-      "path": "internals\\db\\sessions.go",
-      "importance": 10,
-      "role": "session-manager",
-      "package": "db",
-      "imports": [
-        "database/sql",
-        "time",
-        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/models/schemaModels"
-      ],
-      "functions": [
-        {
-          "name": "InitializeProjectSession",
-          "line": 11
-        },
-        {
-          "name": "UpdateMemorySessionID",
-          "line": 63
-        },
-        {
-          "name": "CompleteSession",
-          "line": 74
-        }
-      ],
-      "calls": [
-        {
-          "from": "InitializeProjectSession",
-          "to": "Now"
-        },
-        {
-          "from": "InitializeProjectSession",
-          "to": "Scan"
-        },
-        {
-          "from": "InitializeProjectSession",
-          "to": "QueryRow"
-        },
-        {
-          "from": "InitializeProjectSession",
-          "to": "Parse"
-        },
-        {
-          "from": "InitializeProjectSession",
-          "to": "Exec"
-        },
-        {
-          "from": "InitializeProjectSession",
-          "to": "LastInsertId"
-        },
-        {
-          "from": "UpdateMemorySessionID",
-          "to": "Exec"
-        },
-        {
-          "from": "CompleteSession",
-          "to": "Now"
-        },
-        {
-          "from": "CompleteSession",
-          "to": "Exec"
-        }
-      ]
-    },
-    {
-      "path": "internals\\models\\schemaModels\\schemaModels.go",
-      "importance": 10,
-      "role": "logic",
-      "package": "schemaModels",
-      "imports": [
-        "time"
-      ],
-      "structs": [
-        "Project",
-        "Session",
-        "PendingObservation",
-        "Observation",
-        "ObservationTeaser",
-        "ObservationSearchResult",
-        "SessionSummary"
-      ]
-    },
-    {
-      "path": "test.go",
-      "importance": 10,
-      "role": "entrypoint",
-      "package": "main",
-      "imports": [
-        "database/sql",
-        "fmt",
-        "log",
-        "os",
-        "path/filepath",
-        "strings",
-        "modernc.org/sqlite"
-      ],
-      "functions": [
-        {
-          "name": "main",
-          "line": 16
-        },
-        {
-          "name": "printSessions",
-          "line": 73
-        },
-        {
-          "name": "printObservations",
-          "line": 118
-        },
-        {
-          "name": "printSummaries",
-          "line": 181
-        }
-      ],
-      "calls": [
-        {
-          "from": "main",
-          "to": "UserHomeDir"
-        },
-        {
-          "from": "main",
-          "to": "Join"
-        },
-        {
-          "from": "main",
-          "to": "Open"
-        },
-        {
-          "from": "main",
-          "to": "Close"
-        },
-        {
-          "from": "main",
-          "to": "Exec"
-        },
-        {
-          "from": "main",
-          "to": "Exec"
-        },
-        {
-          "from": "main",
-          "to": "Repeat"
-        },
-        {
-          "from": "main",
-          "to": "printSessions"
-        },
-        {
-          "from": "main",
-          "to": "printObservations"
-        },
-        {
-          "from": "main",
-          "to": "printSummaries"
-        },
-        {
-          "from": "printSessions",
-          "to": "Query"
-        },
-        {
-          "from": "printSessions",
-          "to": "Close"
-        },
-        {
-          "from": "printSessions",
-          "to": "Repeat"
-        },
-        {
-          "from": "printSessions",
-          "to": "Next"
-        },
-        {
-          "from": "printSessions",
-          "to": "Scan"
-        },
-        {
-          "from": "printObservations",
-          "to": "Query"
-        },
-        {
-          "from": "printObservations",
-          "to": "Close"
-        },
-        {
-          "from": "printObservations",
-          "to": "Repeat"
-        },
-        {
-          "from": "printObservations",
-          "to": "Next"
-        },
-        {
-          "from": "printObservations",
-          "to": "Scan"
-        },
-        {
-          "from": "printSummaries",
-          "to": "Query"
-        },
-        {
-          "from": "printSummaries",
-          "to": "Close"
-        },
-        {
-          "from": "printSummaries",
-          "to": "Repeat"
-        },
-        {
-          "from": "printSummaries",
-          "to": "Next"
-        },
-        {
-          "from": "printSummaries",
-          "to": "Scan"
-        }
-      ]
-    },
-    {
-      "path": "internals\\commands\\handleConfig.go",
-      "importance": 8,
-      "role": "config",
-      "package": "commands",
-      "imports": [
-        "fmt",
-        "os",
-        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/config"
-      ],
-      "functions": [
-        {
-          "name": "HandleConfig",
-          "line": 11
-        },
-        {
-          "name": "printHelp",
-          "line": 32
-        },
-        {
-          "name": "handleGet",
-          "line": 44
-        },
-        {
-          "name": "handleSet",
-          "line": 70
-        },
-        {
-          "name": "handleList",
-          "line": 109
-        }
-      ],
-      "calls": [
-        {
-          "from": "HandleConfig",
-          "to": "printHelp"
-        },
-        {
-          "from": "HandleConfig",
-          "to": "handleGet"
-        },
-        {
-          "from": "HandleConfig",
-          "to": "handleSet"
-        },
-        {
-          "from": "HandleConfig",
-          "to": "handleList"
-        },
-        {
-          "from": "HandleConfig",
-          "to": "printHelp"
-        },
-        {
-          "from": "handleGet",
-          "to": "Load"
-        },
-        {
-          "from": "handleSet",
-          "to": "Load"
-        },
-        {
-          "from": "handleSet",
-          "to": "Intensity"
-        },
-        {
-          "from": "handleSet",
-          "to": "IsValid"
-        },
-        {
-          "from": "handleSet",
-          "to": "Save"
-        },
-        {
-          "from": "handleList",
-          "to": "Load"
-        }
-      ]
-    },
-    {
-      "path": "internals\\db\\db.go",
-      "importance": 8,
-      "role": "logic",
-      "package": "db",
-      "imports": [
-        "database/sql",
-        "embed",
-        "fmt",
-        "os",
-        "path/filepath",
-        "strings",
-        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/models/schemaModels",
-        "modernc.org/sqlite"
-      ],
-      "functions": [
-        {
-          "name": "resolveDBPath",
-          "line": 20
-        },
-        {
-          "name": "InitDB",
-          "line": 48
-        },
-        {
-          "name": "GetAllMemories",
-          "line": 81
-        }
-      ],
-      "calls": [
-        {
-          "from": "resolveDBPath",
-          "to": "UserHomeDir"
-        },
-        {
-          "from": "resolveDBPath",
-          "to": "Join"
-        },
-        {
-          "from": "resolveDBPath",
-          "to": "MkdirAll"
-        },
-        {
-          "from": "resolveDBPath",
-          "to": "Join"
-        },
-        {
-          "from": "resolveDBPath",
-          "to": "OpenFile"
-        },
-        {
-          "from": "resolveDBPath",
-          "to": "Close"
-        },
-        {
-          "from": "InitDB",
-          "to": "resolveDBPath"
-        },
-        {
-          "from": "InitDB",
-          "to": "Open"
-        },
-        {
-          "from": "InitDB",
-          "to": "SetMaxOpenConns"
-        },
-        {
-          "from": "InitDB",
-          "to": "Exec"
-        },
-        {
-          "from": "InitDB",
-          "to": "Exec"
-        },
-        {
-          "from": "InitDB",
-          "to": "Exec"
-        },
-        {
-          "from": "InitDB",
-          "to": "Exec"
-        },
-        {
-          "from": "GetAllMemories",
-          "to": "Clean"
-        },
-        {
-          "from": "GetAllMemories",
-          "to": "TrimSpace"
-        },
-        {
-          "from": "GetAllMemories",
-          "to": "ToSlash"
-        },
-        {
-          "from": "GetAllMemories",
-          "to": "Query"
-        },
-        {
-          "from": "GetAllMemories",
-          "to": "Close"
-        },
-        {
-          "from": "GetAllMemories",
-          "to": "Next"
-        },
-        {
-          "from": "GetAllMemories",
-          "to": "Scan"
-        }
-      ]
-    },
-    {
-      "path": "mcpServer\\utils.go",
-      "importance": 8,
-      "role": "mcp-server",
-      "package": "mcpServer",
-      "imports": [
-        "bytes",
-        "crypto/rand",
-        "encoding/hex",
-        "fmt",
-        "os/exec",
-        "regexp",
-        "strings",
-        "time"
-      ],
-      "functions": [
-        {
-          "name": "errorResponse",
-          "line": 29
-        },
-        {
-          "name": "validateOutput",
-          "line": 39
-        },
-        {
-          "name": "trimInput",
-          "line": 67
-        },
-        {
-          "name": "runCaveman",
-          "line": 76
-        },
-        {
-          "name": "callModel",
-          "line": 117
-        },
-        {
-          "name": "cleanOutput",
-          "line": 145
-        },
-        {
-          "name": "newSessionID",
-          "line": 149
-        }
-      ],
-      "calls": [
-        {
-          "from": "validateOutput",
-          "to": "TrimSpace"
-        },
-        {
-          "from": "validateOutput",
-          "to": "Split"
-        },
-        {
-          "from": "validateOutput",
-          "to": "TrimSpace"
-        },
-        {
-          "from": "validateOutput",
-          "to": "Fields"
-        },
-        {
-          "from": "validateOutput",
-          "to": "MatchString"
-        },
-        {
-          "from": "trimInput",
-          "to": "Split"
-        },
-        {
-          "from": "trimInput",
-          "to": "Join"
-        },
-        {
-          "from": "runCaveman",
-          "to": "callModel"
-        },
-        {
-          "from": "runCaveman",
-          "to": "validateOutput"
-        },
-        {
-          "from": "callModel",
-          "to": "Command"
-        },
-        {
-          "from": "callModel",
-          "to": "NewReader"
-        },
-        {
-          "from": "callModel",
-          "to": "Run"
-        },
-        {
-          "from": "callModel",
-          "to": "TrimSpace"
-        },
-        {
-          "from": "callModel",
-          "to": "String"
-        },
-        {
-          "from": "callModel",
-          "to": "TrimSpace"
-        },
-        {
-          "from": "callModel",
-          "to": "String"
-        },
-        {
-          "from": "callModel",
-          "to": "TrimSpace"
-        },
-        {
-          "from": "callModel",
-          "to": "String"
-        },
-        {
-          "from": "cleanOutput",
-          "to": "TrimSpace"
-        },
-        {
-          "from": "newSessionID",
-          "to": "Read"
-        },
-        {
-          "from": "newSessionID",
-          "to": "UnixNano"
-        },
-        {
-          "from": "newSessionID",
-          "to": "Now"
-        },
-        {
-          "from": "newSessionID",
-          "to": "UnixNano"
-        },
-        {
-          "from": "newSessionID",
-          "to": "Now"
-        },
-        {
-          "from": "newSessionID",
-          "to": "EncodeToString"
-        }
-      ]
-    },
-    {
-      "path": "internals\\adapters\\adapter.go",
-      "importance": 7,
-      "role": "adapter",
-      "package": "adapters",
-      "imports": [
-        "github.com/DeepanshuChaid/Cogito-Ai.git/pkg/types"
-      ],
-      "functions": [
-        {
-          "name": "GetAdapter",
-          "line": 20
-        }
-      ],
-      "interfaces": [
-        "Adapter"
-      ]
-    },
-    {
-      "path": "internals\\db\\summaries.go",
-      "importance": 7,
-      "role": "logic",
-      "package": "db",
-      "imports": [
-        "database/sql",
-        "time",
-        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/models/schemaModels"
-      ],
-      "functions": [
-        {
-          "name": "CreateSessionSummary",
-          "line": 12
-        },
-        {
-          "name": "GetLatestSessionSummary",
-          "line": 23
-        }
-      ],
-      "calls": [
-        {
-          "from": "CreateSessionSummary",
-          "to": "Now"
-        },
-        {
-          "from": "CreateSessionSummary",
-          "to": "Exec"
-        },
-        {
-          "from": "CreateSessionSummary",
-          "to": "Format"
-        },
-        {
-          "from": "GetLatestSessionSummary",
-          "to": "Scan"
-        },
-        {
-          "from": "GetLatestSessionSummary",
-          "to": "QueryRow"
-        },
-        {
-          "from": "GetLatestSessionSummary",
-          "to": "Parse"
-        }
-      ]
-    },
-    {
-      "path": "pkg\\types\\types.go",
-      "importance": 7,
-      "role": "logic",
-      "package": "types",
-      "structs": [
-        "HookInput",
-        "HookOutput",
-        "Config"
-      ]
-    },
-    {
-      "path": "internals\\adapters\\claude.go",
-      "importance": 6,
-      "role": "adapter",
-      "package": "adapters",
-      "imports": [
-        "encoding/json",
-        "github.com/DeepanshuChaid/Cogito-Ai.git/pkg/types"
-      ],
-      "functions": [
-        {
-          "name": "mapify",
-          "line": 74
-        }
-      ],
-      "structs": [
-        "ClaudeAdapter",
-        "claudeInput"
-      ],
-      "methods": [
-        {
-          "receiver": "ClaudeAdapter",
-          "name": "Name"
-        },
-        {
-          "receiver": "ClaudeAdapter",
-          "name": "ParseInput"
-        },
-        {
-          "receiver": "ClaudeAdapter",
-          "name": "FormatOutput"
-        },
-        {
-          "receiver": "ClaudeAdapter",
-          "name": "GetHookEvent"
-        }
-      ],
-      "calls": [
-        {
-          "from": "ParseInput",
-          "to": "Unmarshal"
-        },
-        {
-          "from": "ParseInput",
-          "to": "mapify"
-        },
-        {
-          "from": "ParseInput",
-          "to": "mapify"
-        },
-        {
-          "from": "FormatOutput",
-          "to": "Marshal"
-        }
-      ]
-    },
-    {
-      "path": "internals\\commands\\install.go",
-      "importance": 6,
-      "role": "logic",
-      "package": "commands",
-      "imports": [
-        "fmt",
-        "os",
-        "path/filepath",
-        "strings",
-        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/utils/skills"
-      ],
-      "functions": [
-        {
-          "name": "Install",
-          "line": 12
-        },
-        {
-          "name": "upsertCodexMCPServer",
-          "line": 191
-        },
-        {
-          "name": "stripCogitoMCPBlock",
-          "line": 221
-        }
-      ],
-      "calls": [
-        {
-          "from": "Install",
-          "to": "Executable"
-        },
-        {
-          "from": "Install",
-          "to": "EvalSymlinks"
-        },
-        {
-          "from": "Install",
-          "to": "Getwd"
-        },
-        {
-          "from": "Install",
-          "to": "UserHomeDir"
-        },
-        {
-          "from": "Install",
-          "to": "Join"
-        },
-        {
-          "from": "Install",
-          "to": "ReadFile"
-        },
-        {
-          "from": "Install",
-          "to": "WriteFile"
-        },
-        {
-          "from": "Install",
-          "to": "Contains"
-        },
-        {
-          "from": "Install",
-          "to": "OpenFile"
-        },
-        {
-          "from": "Install",
-          "to": "Close"
-        },
-        {
-          "from": "Install",
-          "to": "WriteString"
-        },
-        {
-          "from": "Install",
-          "to": "CreateSkills"
-        },
-        {
-          "from": "Install",
-          "to": "upsertCodexMCPServer"
-        },
-        {
-          "from": "upsertCodexMCPServer",
-          "to": "Join"
-        },
-        {
-          "from": "upsertCodexMCPServer",
-          "to": "MkdirAll"
-        },
-        {
-          "from": "upsertCodexMCPServer",
-          "to": "Join"
-        },
-        {
-          "from": "upsertCodexMCPServer",
-          "to": "ReadFile"
-        },
-        {
-          "from": "upsertCodexMCPServer",
-          "to": "stripCogitoMCPBlock"
-        },
-        {
-          "from": "upsertCodexMCPServer",
-          "to": "TrimSpace"
-        },
-        {
-          "from": "upsertCodexMCPServer",
-          "to": "Executable"
-        },
-        {
-          "from": "upsertCodexMCPServer",
-          "to": "EvalSymlinks"
-        },
-        {
-          "from": "upsertCodexMCPServer",
-          "to": "TrimSpace"
-        },
-        {
-          "from": "upsertCodexMCPServer",
-          "to": "WriteFile"
-        },
-        {
-          "from": "stripCogitoMCPBlock",
-          "to": "Split"
-        },
-        {
-          "from": "stripCogitoMCPBlock",
-          "to": "TrimSpace"
-        },
-        {
-          "from": "stripCogitoMCPBlock",
-          "to": "HasPrefix"
-        },
-        {
-          "from": "stripCogitoMCPBlock",
-          "to": "Join"
-        }
-      ]
-    },
-    {
-      "path": "mcpServer\\types.go",
-      "importance": 5,
-      "role": "mcp-server",
-      "package": "mcpServer",
-      "imports": [
-        "encoding/json"
-      ],
-      "structs": [
-        "JSONRPCRequest",
-        "JSONRPCResponse"
-      ]
-    },
-    {
-      "path": "internals\\commands\\help.go",
-      "importance": 4,
-      "role": "logic",
-      "package": "commands",
-      "imports": [
-        "fmt"
-      ],
-      "functions": [
-        {
-          "name": "Help",
-          "line": 6
-        }
-      ]
-    },
-    {
-      "path": "internals\\commands\\uninstall.go",
-      "importance": 4,
-      "role": "logic",
-      "package": "commands",
-      "imports": [
-        "fmt",
-        "os",
-        "path/filepath"
-      ],
-      "functions": [
-        {
-          "name": "Uninstall",
-          "line": 10
-        }
-      ],
-      "calls": [
-        {
-          "from": "Uninstall",
-          "to": "Getwd"
-        },
-        {
-          "from": "Uninstall",
-          "to": "RemoveAll"
-        },
-        {
-          "from": "Uninstall",
-          "to": "Join"
-        },
-        {
-          "from": "Uninstall",
-          "to": "RemoveAll"
-        },
-        {
-          "from": "Uninstall",
-          "to": "Join"
-        }
-      ]
-    },
-    {
-      "path": "internals\\commands\\unkown.go",
-      "importance": 4,
-      "role": "logic",
-      "package": "commands",
-      "imports": [
-        "fmt"
-      ],
-      "functions": [
-        {
-          "name": "Unknown",
-          "line": 5
-        }
-      ]
-    },
-    {
-      "path": "internals\\commands\\version.go",
-      "importance": 4,
-      "role": "logic",
-      "package": "commands",
-      "imports": [
-        "fmt"
-      ],
-      "functions": [
-        {
-          "name": "Version",
-          "line": 5
-        }
-      ]
-    },
-    {
-      "path": "internals\\injector\\injector.go",
-      "importance": 4,
-      "role": "injector",
-      "package": "injector",
-      "imports": [
-        "strings",
-        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/config"
-      ],
-      "functions": [
-        {
-          "name": "BuildFinalPrompt",
-          "line": 38
-        }
-      ],
-      "calls": [
-        {
-          "from": "BuildFinalPrompt",
-          "to": "WriteString"
-        },
-        {
-          "from": "BuildFinalPrompt",
-          "to": "WriteString"
-        },
-        {
-          "from": "BuildFinalPrompt",
-          "to": "WriteString"
-        },
-        {
-          "from": "BuildFinalPrompt",
-          "to": "WriteString"
-        },
-        {
-          "from": "BuildFinalPrompt",
-          "to": "WriteString"
-        },
-        {
-          "from": "BuildFinalPrompt",
-          "to": "WriteString"
-        },
-        {
-          "from": "BuildFinalPrompt",
-          "to": "WriteString"
-        },
-        {
-          "from": "BuildFinalPrompt",
-          "to": "String"
-        }
-      ]
-    },
-    {
-      "path": "internals\\utils\\skills\\skills.go",
-      "importance": 4,
-      "role": "logic",
-      "package": "skills",
-      "imports": [
-        "os",
-        "path/filepath",
-        "fmt"
-      ],
-      "functions": [
-        {
-          "name": "CreateSkills",
-          "line": 9
-        }
-      ],
-      "calls": [
-        {
-          "from": "CreateSkills",
-          "to": "Join"
-        },
-        {
-          "from": "CreateSkills",
-          "to": "MkdirAll"
-        },
-        {
-          "from": "CreateSkills",
-          "to": "Join"
-        },
-        {
-          "from": "CreateSkills",
-          "to": "MkdirAll"
-        },
-        {
-          "from": "CreateSkills",
-          "to": "Join"
-        },
-        {
-          "from": "CreateSkills",
-          "to": "MkdirAll"
-        },
-        {
-          "from": "CreateSkills",
-          "to": "Join"
-        },
-        {
-          "from": "CreateSkills",
-          "to": "MkdirAll"
-        },
-        {
-          "from": "CreateSkills",
-          "to": "Join"
-        },
-        {
-          "from": "CreateSkills",
-          "to": "WriteFile"
-        },
-        {
-          "from": "CreateSkills",
-          "to": "Join"
-        },
-        {
-          "from": "CreateSkills",
-          "to": "WriteFile"
-        },
-        {
-          "from": "CreateSkills",
-          "to": "Join"
-        },
-        {
-          "from": "CreateSkills",
-          "to": "WriteFile"
-        },
-        {
-          "from": "CreateSkills",
-          "to": "Join"
-        },
-        {
-          "from": "CreateSkills",
-          "to": "WriteFile"
-        },
-        {
-          "from": "CreateSkills",
-          "to": "Join"
-        }
-      ]
-    },
-    {
-      "path": "internals\\utils\\welcomeUi\\welcomeUi.go",
-      "importance": 4,
-      "role": "ui",
-      "package": "welcomeUi",
-      "imports": [
-        "fmt",
-        "github.com/charmbracelet/lipgloss",
-        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/config"
-      ],
-      "functions": [
-        {
-          "name": "ShowWelcomeUI",
-          "line": 10
-        }
-      ],
-      "calls": [
-        {
-          "from": "ShowWelcomeUI",
-          "to": "Load"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "Color"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "Color"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "Color"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "Color"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "Render"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "Bold"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "Foreground"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "NewStyle"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "Render"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "Foreground"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "NewStyle"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "Render"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "Foreground"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "NewStyle"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "Render"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "Foreground"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "NewStyle"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "JoinVertical"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "Render"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "Foreground"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "NewStyle"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "Render"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "Foreground"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "NewStyle"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "JoinVertical"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "cmd"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "cmd"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "cmd"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "cmd"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "Render"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "Foreground"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "NewStyle"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "Render"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "Padding"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "BorderForeground"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "Border"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "NewStyle"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "RoundedBorder"
-        },
-        {
-          "from": "ShowWelcomeUI",
-          "to": "JoinVertical"
-        }
-      ]
-    },
-    {
-      "path": "mcpServer\\mcpServer.go",
-      "importance": 4,
-      "role": "mcp-server",
-      "package": "mcpServer",
-      "imports": [
-        "bufio",
-        "encoding/json",
-        "fmt",
-        "os"
-      ],
-      "functions": [
-        {
-          "name": "ServeMcp",
-          "line": 13
-        }
-      ],
-      "calls": [
-        {
-          "from": "ServeMcp",
-          "to": "NewScanner"
-        },
-        {
-          "from": "ServeMcp",
-          "to": "Buffer"
-        },
-        {
-          "from": "ServeMcp",
-          "to": "NewEncoder"
-        },
-        {
-          "from": "ServeMcp",
-          "to": "Scan"
-        },
-        {
-          "from": "ServeMcp",
-          "to": "Unmarshal"
-        },
-        {
-          "from": "ServeMcp",
-          "to": "Bytes"
-        },
-        {
-          "from": "ServeMcp",
-          "to": "Fprintf"
-        },
-        {
-          "from": "ServeMcp",
-          "to": "handleRequest"
-        },
-        {
-          "from": "ServeMcp",
-          "to": "Encode"
-        }
-      ]
-    },
-    {
-      "path": "mcpServer\\handleRequest.go",
-      "importance": 2,
-      "role": "mcp-server",
-      "package": "mcpServer",
-      "imports": [
-        "os",
-        "path/filepath",
-        "strings",
-        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/db",
-        "github.com/DeepanshuChaid/Cogito-Ai.git/internals/models/schemaModels"
-      ],
-      "functions": [
-        {
-          "name": "handleRequest",
-          "line": 25
-        }
-      ],
-      "calls": [
-        {
-          "from": "handleRequest",
-          "to": "Getwd"
-        },
-        {
-          "from": "handleRequest",
-          "to": "newSessionID"
-        },
-        {
-          "from": "handleRequest",
-          "to": "InitializeProjectSession"
-        },
-        {
-          "from": "handleRequest",
-          "to": "errorResponse"
-        },
-        {
-          "from": "handleRequest",
-          "to": "errorResponse"
-        },
-        {
-          "from": "handleRequest",
-          "to": "errorResponse"
-        },
-        {
-          "from": "handleRequest",
-          "to": "trimInput"
-        },
-        {
-          "from": "handleRequest",
-          "to": "runCaveman"
-        },
-        {
-          "from": "handleRequest",
-          "to": "errorResponse"
-        },
-        {
-          "from": "handleRequest",
-          "to": "cleanOutput"
-        },
-        {
-          "from": "handleRequest",
-          "to": "Walk"
-        },
-        {
-          "from": "handleRequest",
-          "to": "IsDir"
-        },
-        {
-          "from": "handleRequest",
-          "to": "HasPrefix"
-        },
-        {
-          "from": "handleRequest",
-          "to": "Base"
-        },
-        {
-          "from": "handleRequest",
-          "to": "errorResponse"
-        }
-      ]
-    },
-    {
-      "path": "internals\\adapters\\codex.go",
-      "importance": 1,
-      "role": "adapter",
-      "package": "adapters"
-    },
-    {
-      "path": "internals\\adapters\\cursor.go",
-      "importance": 1,
-      "role": "adapter",
-      "package": "adapters"
-    },
-    {
-      "path": "internals\\adapters\\gemini.go",
-      "importance": 1,
-      "role": "adapter",
-      "package": "adapters"
-    },
-    {
-      "path": "internals\\compress\\compress.go",
-      "importance": 1,
-      "role": "logic",
-      "package": "compress"
-    },
-    {
-      "path": "internals\\compressor\\ollama.go",
-      "importance": 1,
-      "role": "logic",
-      "package": "compressor"
-    },
-    {
-      "path": "internals\\context\\context.go",
-      "importance": 1,
-      "role": "logic",
-      "package": "context"
-    }
-  ],
-  "flows": [
-    {
-      "name": "CLI Execution",
-      "steps": [
-        "main",
+      "important_calls": [
         "InitDB",
-        "Fprintf",
         "Install",
         "BuildMap",
         "HandleConfig",
@@ -2980,42 +28,336 @@
         "Version",
         "HandleHooks",
         "ServeMcp",
-        "Getwd",
-        "Getppid",
         "InitializeProjectSession",
-        "Fprintf",
         "Unknown",
         "ShowWelcomeUI",
-        "Stat",
-        "Mode",
-        "ShowWelcomeUI",
-        "ReadAll",
-        "Fprintf",
-        "ReplaceAll",
-        "ReplaceAll",
-        "TrimPrefix",
-        "Unmarshal",
-        "Fprintf",
         "Load",
-        "Fprintf",
-        "Fprintf",
-        "Getwd",
         "GetAllMemories",
-        "BuildFinalPrompt",
-        "Marshal"
+        "BuildFinalPrompt"
       ]
     },
     {
-      "name": "Build Map Flow",
-      "steps": [
-        "BuildMap",
-        "parseGoFile",
+      "path": "mcpServer\\handleRequest.go",
+      "importance": 100,
+      "role": "entrypoint",
+      "important_calls": [
+        "newSessionID",
+        "InitializeProjectSession",
+        "errorResponse",
+        "trimInput",
+        "runCaveman",
+        "cleanOutput"
+      ]
+    },
+    {
+      "path": "mcpServer\\mcpServer.go",
+      "importance": 100,
+      "role": "entrypoint",
+      "key_functions": [
+        "ServeMcp"
+      ],
+      "important_calls": [
+        "handleRequest"
+      ]
+    },
+    {
+      "path": "test.go",
+      "importance": 100,
+      "role": "entrypoint",
+      "important_calls": [
+        "printSessions",
+        "printObservations",
+        "printSummaries"
+      ]
+    },
+    {
+      "path": "internals\\db\\sessions.go",
+      "importance": 95,
+      "role": "state-manager",
+      "key_functions": [
+        "InitializeProjectSession",
+        "UpdateMemorySessionID",
+        "CompleteSession"
+      ]
+    },
+    {
+      "path": "mcpServer\\utils.go",
+      "importance": 95,
+      "role": "orchestrator",
+      "important_calls": [
+        "callModel",
+        "validateOutput"
+      ]
+    },
+    {
+      "path": "internals\\db\\observations.go",
+      "importance": 80,
+      "role": "memory-layer",
+      "key_functions": [
+        "CreateObservation",
+        "GetRecentObservations",
+        "GetObservationTeasers",
+        "FastSearch",
+        "SearchObservationsFTS"
+      ],
+      "important_calls": [
+        "SearchObservationsFTS"
+      ]
+    },
+    {
+      "path": "internals\\compress\\compress.go",
+      "importance": 70,
+      "role": "memory-layer"
+    },
+    {
+      "path": "internals\\compressor\\ollama.go",
+      "importance": 70,
+      "role": "memory-layer"
+    },
+    {
+      "path": "internals\\config\\config.go",
+      "importance": 70,
+      "role": "config-layer",
+      "key_functions": [
+        "GetConfigPath",
+        "GetConfigPathForDir",
+        "Load",
+        "LoadForDir",
+        "Save",
+        "IsValid"
+      ],
+      "important_calls": [
+        "GetConfigPath",
+        "LoadForDir",
+        "GetConfigPathForDir",
+        "defaultConfig",
+        "IsValid"
+      ]
+    },
+    {
+      "path": "mcpServer\\types.go",
+      "importance": 60,
+      "role": "orchestrator"
+    },
+    {
+      "path": "internals\\adapters\\adapter.go",
+      "importance": 40,
+      "role": "external-adapter",
+      "key_functions": [
+        "GetAdapter"
+      ]
+    },
+    {
+      "path": "internals\\adapters\\claude.go",
+      "importance": 40,
+      "role": "external-adapter",
+      "important_calls": [
+        "mapify"
+      ]
+    },
+    {
+      "path": "internals\\adapters\\codex.go",
+      "importance": 40,
+      "role": "external-adapter"
+    },
+    {
+      "path": "internals\\adapters\\cursor.go",
+      "importance": 40,
+      "role": "external-adapter"
+    },
+    {
+      "path": "internals\\adapters\\gemini.go",
+      "importance": 40,
+      "role": "external-adapter"
+    },
+    {
+      "path": "internals\\utils\\welcomeUi\\welcomeUi.go",
+      "importance": 40,
+      "role": "ui-layer",
+      "key_functions": [
+        "ShowWelcomeUI"
+      ],
+      "important_calls": [
+        "Load"
+      ]
+    },
+    {
+      "path": "internals\\commands\\buildMap.go",
+      "importance": 35,
+      "role": "ui-layer",
+      "key_functions": [
+        "BuildMap"
+      ],
+      "important_calls": [
         "parseFile",
+        "classifyRole",
+        "isIgnoreZone",
+        "isEntryPoint",
+        "calculateImportance",
+        "isHighSignalFunc",
+        "generateExecutionFlows",
+        "isLowValueCall",
+        "parseGoFile",
         "parsePythonFile",
         "parseJSFile",
-        "parseJavaFile",
-        "calculateImportance"
+        "parseJavaFile"
       ]
+    },
+    {
+      "path": "internals\\commands\\handleConfig.go",
+      "importance": 35,
+      "role": "config-layer",
+      "key_functions": [
+        "HandleConfig"
+      ],
+      "important_calls": [
+        "printHelp",
+        "handleGet",
+        "handleSet",
+        "handleList",
+        "Load",
+        "IsValid",
+        "Save"
+      ]
+    },
+    {
+      "path": "internals\\db\\db.go",
+      "importance": 20,
+      "role": "utility",
+      "key_functions": [
+        "InitDB",
+        "GetAllMemories"
+      ],
+      "important_calls": [
+        "resolveDBPath"
+      ]
+    },
+    {
+      "path": "internals\\injector\\injector.go",
+      "importance": 20,
+      "role": "injector",
+      "key_functions": [
+        "BuildFinalPrompt"
+      ]
+    },
+    {
+      "path": "internals\\commands\\handleHooks.go",
+      "importance": 15,
+      "role": "utility",
+      "key_functions": [
+        "HandleHooks"
+      ],
+      "important_calls": [
+        "handleSessionStart",
+        "handleToolUse",
+        "handleSessionEnd",
+        "GetLatestSessionSummary",
+        "GetObservationTeasers",
+        "Load",
+        "BuildFinalPrompt",
+        "shouldSaveObservation",
+        "CompleteSession"
+      ]
+    },
+    {
+      "path": "internals\\commands\\help.go",
+      "importance": 15,
+      "role": "utility",
+      "key_functions": [
+        "Help"
+      ]
+    },
+    {
+      "path": "internals\\commands\\install.go",
+      "importance": 15,
+      "role": "utility",
+      "key_functions": [
+        "Install"
+      ],
+      "important_calls": [
+        "CreateSkills",
+        "upsertCodexMCPServer",
+        "stripCogitoMCPBlock"
+      ]
+    },
+    {
+      "path": "internals\\commands\\uninstall.go",
+      "importance": 15,
+      "role": "utility",
+      "key_functions": [
+        "Uninstall"
+      ]
+    },
+    {
+      "path": "internals\\commands\\unkown.go",
+      "importance": 15,
+      "role": "utility",
+      "key_functions": [
+        "Unknown"
+      ]
+    },
+    {
+      "path": "internals\\commands\\version.go",
+      "importance": 15,
+      "role": "utility",
+      "key_functions": [
+        "Version"
+      ]
+    },
+    {
+      "path": "internals\\db\\summaries.go",
+      "importance": 15,
+      "role": "utility",
+      "key_functions": [
+        "CreateSessionSummary",
+        "GetLatestSessionSummary"
+      ]
+    },
+    {
+      "path": "internals\\utils\\skills\\skills.go",
+      "importance": 15,
+      "role": "utility",
+      "key_functions": [
+        "CreateSkills"
+      ]
+    },
+    {
+      "path": "internals\\context\\context.go",
+      "importance": 10,
+      "role": "utility"
+    },
+    {
+      "path": "internals\\db\\pendingQueue.go",
+      "importance": 10,
+      "role": "utility",
+      "key_functions": [
+        "GetProjectBySession",
+        "StartPendingWorker",
+        "CreatePendingObservation",
+        "GetUnprocessedObservations",
+        "MarkObservationProcessed"
+      ],
+      "important_calls": [
+        "GetUnprocessedObservations",
+        "GetProjectBySession",
+        "CreateObservation",
+        "MarkObservationProcessed"
+      ]
+    },
+    {
+      "path": "internals\\models\\schemaModels\\schemaModels.go",
+      "importance": 10,
+      "role": "utility"
+    },
+    {
+      "path": "pkg\\types\\types.go",
+      "importance": 10,
+      "role": "utility"
     }
+  ],
+  "flows": [
+    "CLI Pipeline: CLI Entry → InitDB → Install → BuildMap → HandleConfig → Help → Uninstall → Version → HandleHooks → ServeMcp → InitializeProjectSession → Unknown → ShowWelcomeUI → Load → GetAllMemories → BuildFinalPrompt",
+    "MCP Server Flow: MCP Request → ServeMcp",
+    "Memory Intelligence Flow: Session Lifecycle → handleSessionStart → handleSessionEnd → GetLatestSessionSummary → BuildFinalPrompt → CompleteSession"
   ]
 }
