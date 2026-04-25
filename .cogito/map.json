@@ -1,4 +1,5 @@
 {
+  "version": "2.0",
   "entrypoints": [
     "cmd\\cogito\\main.go",
     "mcpServer\\handleRequest.go",
@@ -6,118 +7,52 @@
     "test.go"
   ],
   "state_map": {
-    "config": "internals\\config\\config.go",
-    "data": "internals\\commands\\handleConfig.go",
+    "data": "internals\\config\\config.go",
     "sessions": "internals\\db\\sessions.go"
   },
-  "files": [
+  "nodes": [
     {
-      "path": "cmd\\cogito\\main.go",
+      "id": "mcpServer\\handleRequest.go",
       "importance": 100,
-      "role": "entrypoint",
-      "key_functions": [
-        "HandleHook"
+      "tags": [
+        "entrypoint",
+        "orchestrator"
+      ]
+    },
+    {
+      "id": "mcpServer\\mcpServer.go",
+      "importance": 100,
+      "tags": [
+        "entrypoint",
+        "orchestrator"
       ],
-      "important_calls": [
-        "InitDB",
-        "Install",
-        "BuildMap",
-        "HandleConfig",
-        "Help",
-        "Uninstall",
-        "Version",
-        "HandleHooks",
-        "ServeMcp",
-        "InitializeProjectSession",
-        "Unknown",
-        "ShowWelcomeUI",
-        "Load",
-        "GetAllMemories",
-        "BuildFinalPrompt"
-      ]
-    },
-    {
-      "path": "mcpServer\\handleRequest.go",
-      "importance": 100,
-      "role": "entrypoint",
-      "important_calls": [
-        "newSessionID",
-        "InitializeProjectSession",
-        "errorResponse",
-        "trimInput",
-        "runCaveman",
-        "cleanOutput"
-      ]
-    },
-    {
-      "path": "mcpServer\\mcpServer.go",
-      "importance": 100,
-      "role": "entrypoint",
       "key_functions": [
         "ServeMcp"
-      ],
-      "important_calls": [
-        "handleRequest"
       ]
     },
     {
-      "path": "test.go",
+      "id": "cmd\\cogito\\main.go",
       "importance": 100,
-      "role": "entrypoint",
-      "important_calls": [
-        "printSessions",
-        "printObservations",
-        "printSummaries"
-      ]
-    },
-    {
-      "path": "internals\\db\\sessions.go",
-      "importance": 95,
-      "role": "state-manager",
-      "key_functions": [
-        "InitializeProjectSession",
-        "UpdateMemorySessionID",
-        "CompleteSession"
-      ]
-    },
-    {
-      "path": "mcpServer\\utils.go",
-      "importance": 95,
-      "role": "orchestrator",
-      "important_calls": [
-        "callModel",
-        "validateOutput"
-      ]
-    },
-    {
-      "path": "internals\\db\\observations.go",
-      "importance": 80,
-      "role": "memory-layer",
-      "key_functions": [
-        "CreateObservation",
-        "GetRecentObservations",
-        "GetObservationTeasers",
-        "FastSearch",
-        "SearchObservationsFTS"
+      "tags": [
+        "entrypoint"
       ],
-      "important_calls": [
-        "SearchObservationsFTS"
+      "key_functions": [
+        "HandleHook"
       ]
     },
     {
-      "path": "internals\\compress\\compress.go",
-      "importance": 70,
-      "role": "memory-layer"
+      "id": "test.go",
+      "importance": 100,
+      "tags": [
+        "entrypoint"
+      ]
     },
     {
-      "path": "internals\\compressor\\ollama.go",
-      "importance": 70,
-      "role": "memory-layer"
-    },
-    {
-      "path": "internals\\config\\config.go",
-      "importance": 70,
-      "role": "config-layer",
+      "id": "internals\\config\\config.go",
+      "importance": 40,
+      "tags": [
+        "state-owner"
+      ],
       "key_functions": [
         "GetConfigPath",
         "GetConfigPathForDir",
@@ -125,239 +60,438 @@
         "LoadForDir",
         "Save",
         "IsValid"
+      ]
+    },
+    {
+      "id": "internals\\commands\\buildMap.go",
+      "importance": 38,
+      "tags": [
+        "utility"
       ],
-      "important_calls": [
-        "GetConfigPath",
-        "LoadForDir",
-        "GetConfigPathForDir",
-        "defaultConfig",
-        "IsValid"
-      ]
-    },
-    {
-      "path": "mcpServer\\types.go",
-      "importance": 60,
-      "role": "orchestrator"
-    },
-    {
-      "path": "internals\\adapters\\adapter.go",
-      "importance": 40,
-      "role": "external-adapter",
-      "key_functions": [
-        "GetAdapter"
-      ]
-    },
-    {
-      "path": "internals\\adapters\\claude.go",
-      "importance": 40,
-      "role": "external-adapter",
-      "important_calls": [
-        "mapify"
-      ]
-    },
-    {
-      "path": "internals\\adapters\\codex.go",
-      "importance": 40,
-      "role": "external-adapter"
-    },
-    {
-      "path": "internals\\adapters\\cursor.go",
-      "importance": 40,
-      "role": "external-adapter"
-    },
-    {
-      "path": "internals\\adapters\\gemini.go",
-      "importance": 40,
-      "role": "external-adapter"
-    },
-    {
-      "path": "internals\\utils\\welcomeUi\\welcomeUi.go",
-      "importance": 40,
-      "role": "ui-layer",
-      "key_functions": [
-        "ShowWelcomeUI"
-      ],
-      "important_calls": [
-        "Load"
-      ]
-    },
-    {
-      "path": "internals\\commands\\buildMap.go",
-      "importance": 35,
-      "role": "ui-layer",
       "key_functions": [
         "BuildMap"
-      ],
-      "important_calls": [
-        "parseFile",
-        "classifyRole",
-        "isIgnoreZone",
-        "isEntryPoint",
-        "calculateImportance",
-        "isHighSignalFunc",
-        "generateExecutionFlows",
-        "isLowValueCall",
-        "parseGoFile",
-        "parsePythonFile",
-        "parseJSFile",
-        "parseJavaFile"
       ]
     },
     {
-      "path": "internals\\commands\\handleConfig.go",
-      "importance": 35,
-      "role": "config-layer",
+      "id": "mcpServer\\utils.go",
+      "importance": 36,
+      "tags": [
+        "orchestrator"
+      ]
+    },
+    {
+      "id": "internals\\commands\\cache.go",
+      "importance": 36,
+      "tags": [
+        "utility"
+      ],
+      "key_functions": [
+        "LoadCache",
+        "SaveCache",
+        "GetFileHash"
+      ]
+    },
+    {
+      "id": "internals\\models\\schemaModels\\schemaModels.go",
+      "importance": 24,
+      "tags": [
+        "utility"
+      ]
+    },
+    {
+      "id": "internals\\db\\observations.go",
+      "importance": 21,
+      "tags": [
+        "utility"
+      ],
+      "key_functions": [
+        "CreateObservation",
+        "GetRecentObservations",
+        "GetObservationTeasers",
+        "FastSearch",
+        "SearchObservationsFTS"
+      ]
+    },
+    {
+      "id": "internals\\commands\\handleHooks.go",
+      "importance": 20,
+      "tags": [
+        "utility"
+      ],
+      "key_functions": [
+        "HandleHooks"
+      ]
+    },
+    {
+      "id": "internals\\db\\sessions.go",
+      "importance": 19,
+      "tags": [
+        "state-owner"
+      ],
+      "key_functions": [
+        "InitializeProjectSession",
+        "UpdateMemorySessionID",
+        "CompleteSession"
+      ]
+    },
+    {
+      "id": "internals\\commands\\handleConfig.go",
+      "importance": 17,
+      "tags": [
+        "state-owner"
+      ],
       "key_functions": [
         "HandleConfig"
-      ],
-      "important_calls": [
-        "printHelp",
-        "handleGet",
-        "handleSet",
-        "handleList",
-        "Load",
-        "IsValid",
-        "Save"
       ]
     },
     {
-      "path": "internals\\db\\db.go",
-      "importance": 20,
-      "role": "utility",
+      "id": "internals\\commands\\utils.go",
+      "importance": 17,
+      "tags": [
+        "utility"
+      ],
+      "key_functions": [
+        "ShouldSkipDir"
+      ]
+    },
+    {
+      "id": "internals\\db\\db.go",
+      "importance": 17,
+      "tags": [
+        "utility"
+      ],
       "key_functions": [
         "InitDB",
         "GetAllMemories"
-      ],
-      "important_calls": [
-        "resolveDBPath"
       ]
     },
     {
-      "path": "internals\\injector\\injector.go",
-      "importance": 20,
-      "role": "injector",
+      "id": "pkg\\types\\types.go",
+      "importance": 16,
+      "tags": [
+        "utility"
+      ]
+    },
+    {
+      "id": "internals\\commands\\install.go",
+      "importance": 15,
+      "tags": [
+        "utility"
+      ],
+      "key_functions": [
+        "Install"
+      ]
+    },
+    {
+      "id": "internals\\utils\\welcomeUi\\welcomeUi.go",
+      "importance": 15,
+      "tags": [
+        "utility"
+      ],
+      "key_functions": [
+        "ShowWelcomeUI"
+      ]
+    },
+    {
+      "id": "internals\\injector\\injector.go",
+      "importance": 15,
+      "tags": [
+        "utility"
+      ],
       "key_functions": [
         "BuildFinalPrompt"
       ]
     },
     {
-      "path": "internals\\commands\\handleHooks.go",
+      "id": "internals\\adapters\\claude.go",
       "importance": 15,
-      "role": "utility",
-      "key_functions": [
-        "HandleHooks"
+      "tags": [
+        "boundary",
+        "adapter"
+      ]
+    },
+    {
+      "id": "internals\\db\\pendingQueue.go",
+      "importance": 15,
+      "tags": [
+        "utility"
       ],
-      "important_calls": [
-        "handleSessionStart",
-        "handleToolUse",
-        "handleSessionEnd",
-        "GetLatestSessionSummary",
-        "GetObservationTeasers",
-        "Load",
-        "BuildFinalPrompt",
-        "shouldSaveObservation",
-        "CompleteSession"
-      ]
-    },
-    {
-      "path": "internals\\commands\\help.go",
-      "importance": 15,
-      "role": "utility",
-      "key_functions": [
-        "Help"
-      ]
-    },
-    {
-      "path": "internals\\commands\\install.go",
-      "importance": 15,
-      "role": "utility",
-      "key_functions": [
-        "Install"
-      ],
-      "important_calls": [
-        "CreateSkills",
-        "upsertCodexMCPServer",
-        "stripCogitoMCPBlock"
-      ]
-    },
-    {
-      "path": "internals\\commands\\uninstall.go",
-      "importance": 15,
-      "role": "utility",
-      "key_functions": [
-        "Uninstall"
-      ]
-    },
-    {
-      "path": "internals\\commands\\unkown.go",
-      "importance": 15,
-      "role": "utility",
-      "key_functions": [
-        "Unknown"
-      ]
-    },
-    {
-      "path": "internals\\commands\\version.go",
-      "importance": 15,
-      "role": "utility",
-      "key_functions": [
-        "Version"
-      ]
-    },
-    {
-      "path": "internals\\db\\summaries.go",
-      "importance": 15,
-      "role": "utility",
-      "key_functions": [
-        "CreateSessionSummary",
-        "GetLatestSessionSummary"
-      ]
-    },
-    {
-      "path": "internals\\utils\\skills\\skills.go",
-      "importance": 15,
-      "role": "utility",
-      "key_functions": [
-        "CreateSkills"
-      ]
-    },
-    {
-      "path": "internals\\context\\context.go",
-      "importance": 10,
-      "role": "utility"
-    },
-    {
-      "path": "internals\\db\\pendingQueue.go",
-      "importance": 10,
-      "role": "utility",
       "key_functions": [
         "GetProjectBySession",
         "StartPendingWorker",
         "CreatePendingObservation",
         "GetUnprocessedObservations",
         "MarkObservationProcessed"
-      ],
-      "important_calls": [
-        "GetUnprocessedObservations",
-        "GetProjectBySession",
-        "CreateObservation",
-        "MarkObservationProcessed"
       ]
     },
     {
-      "path": "internals\\models\\schemaModels\\schemaModels.go",
-      "importance": 10,
-      "role": "utility"
+      "id": "internals\\db\\summaries.go",
+      "importance": 14,
+      "tags": [
+        "utility"
+      ],
+      "key_functions": [
+        "CreateSessionSummary",
+        "GetLatestSessionSummary"
+      ]
     },
     {
-      "path": "pkg\\types\\types.go",
+      "id": "mcpServer\\types.go",
+      "importance": 14,
+      "tags": [
+        "orchestrator"
+      ]
+    },
+    {
+      "id": "internals\\commands\\version.go",
+      "importance": 13,
+      "tags": [
+        "utility"
+      ],
+      "key_functions": [
+        "Version"
+      ]
+    },
+    {
+      "id": "internals\\commands\\unkown.go",
+      "importance": 13,
+      "tags": [
+        "utility"
+      ],
+      "key_functions": [
+        "Unknown"
+      ]
+    },
+    {
+      "id": "internals\\utils\\skills\\skills.go",
+      "importance": 13,
+      "tags": [
+        "utility"
+      ],
+      "key_functions": [
+        "CreateSkills"
+      ]
+    },
+    {
+      "id": "internals\\commands\\uninstall.go",
+      "importance": 13,
+      "tags": [
+        "utility"
+      ],
+      "key_functions": [
+        "Uninstall"
+      ]
+    },
+    {
+      "id": "internals\\commands\\help.go",
+      "importance": 13,
+      "tags": [
+        "utility"
+      ],
+      "key_functions": [
+        "Help"
+      ]
+    },
+    {
+      "id": "internals\\adapters\\adapter.go",
+      "importance": 11,
+      "tags": [
+        "boundary",
+        "adapter"
+      ],
+      "key_functions": [
+        "GetAdapter"
+      ]
+    },
+    {
+      "id": "internals\\compress\\compress.go",
       "importance": 10,
-      "role": "utility"
+      "tags": [
+        "utility"
+      ]
+    },
+    {
+      "id": "internals\\context\\context.go",
+      "importance": 10,
+      "tags": [
+        "utility"
+      ]
+    },
+    {
+      "id": "internals\\adapters\\gemini.go",
+      "importance": 10,
+      "tags": [
+        "boundary",
+        "adapter"
+      ]
+    },
+    {
+      "id": "internals\\compressor\\ollama.go",
+      "importance": 10,
+      "tags": [
+        "utility"
+      ]
+    },
+    {
+      "id": "internals\\adapters\\cursor.go",
+      "importance": 10,
+      "tags": [
+        "boundary",
+        "adapter"
+      ]
+    },
+    {
+      "id": "internals\\adapters\\codex.go",
+      "importance": 10,
+      "tags": [
+        "boundary",
+        "adapter"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "from": "internals\\commands\\handleHooks.go",
+      "to": "internals\\config\\config.go",
+      "weight": 1
+    },
+    {
+      "from": "internals\\commands\\install.go",
+      "to": "internals\\utils\\skills\\skills.go",
+      "weight": 1
+    },
+    {
+      "from": "internals\\db\\pendingQueue.go",
+      "to": "internals\\db\\observations.go",
+      "weight": 1
+    },
+    {
+      "from": "cmd\\cogito\\main.go",
+      "to": "internals\\db\\db.go",
+      "weight": 2
+    },
+    {
+      "from": "cmd\\cogito\\main.go",
+      "to": "internals\\commands\\buildMap.go",
+      "weight": 1
+    },
+    {
+      "from": "cmd\\cogito\\main.go",
+      "to": "internals\\commands\\help.go",
+      "weight": 1
+    },
+    {
+      "from": "cmd\\cogito\\main.go",
+      "to": "internals\\db\\sessions.go",
+      "weight": 1
+    },
+    {
+      "from": "internals\\commands\\buildMap.go",
+      "to": "internals\\commands\\utils.go",
+      "weight": 1
+    },
+    {
+      "from": "internals\\commands\\handleHooks.go",
+      "to": "internals\\injector\\injector.go",
+      "weight": 1
+    },
+    {
+      "from": "mcpServer\\handleRequest.go",
+      "to": "mcpServer\\utils.go",
+      "weight": 9
+    },
+    {
+      "from": "mcpServer\\handleRequest.go",
+      "to": "internals\\db\\sessions.go",
+      "weight": 1
+    },
+    {
+      "from": "cmd\\cogito\\main.go",
+      "to": "internals\\commands\\install.go",
+      "weight": 1
+    },
+    {
+      "from": "cmd\\cogito\\main.go",
+      "to": "internals\\commands\\uninstall.go",
+      "weight": 1
+    },
+    {
+      "from": "cmd\\cogito\\main.go",
+      "to": "internals\\commands\\version.go",
+      "weight": 1
+    },
+    {
+      "from": "internals\\commands\\buildMap.go",
+      "to": "internals\\commands\\cache.go",
+      "weight": 3
+    },
+    {
+      "from": "mcpServer\\mcpServer.go",
+      "to": "mcpServer\\handleRequest.go",
+      "weight": 1
+    },
+    {
+      "from": "cmd\\cogito\\main.go",
+      "to": "mcpServer\\mcpServer.go",
+      "weight": 1
+    },
+    {
+      "from": "cmd\\cogito\\main.go",
+      "to": "internals\\config\\config.go",
+      "weight": 1
+    },
+    {
+      "from": "cmd\\cogito\\main.go",
+      "to": "internals\\injector\\injector.go",
+      "weight": 1
+    },
+    {
+      "from": "internals\\commands\\handleHooks.go",
+      "to": "internals\\db\\summaries.go",
+      "weight": 1
+    },
+    {
+      "from": "internals\\commands\\handleHooks.go",
+      "to": "internals\\db\\observations.go",
+      "weight": 1
+    },
+    {
+      "from": "internals\\commands\\handleHooks.go",
+      "to": "internals\\db\\sessions.go",
+      "weight": 1
+    },
+    {
+      "from": "internals\\utils\\welcomeUi\\welcomeUi.go",
+      "to": "internals\\config\\config.go",
+      "weight": 1
+    },
+    {
+      "from": "cmd\\cogito\\main.go",
+      "to": "internals\\commands\\handleConfig.go",
+      "weight": 1
+    },
+    {
+      "from": "cmd\\cogito\\main.go",
+      "to": "internals\\commands\\handleHooks.go",
+      "weight": 1
+    },
+    {
+      "from": "cmd\\cogito\\main.go",
+      "to": "internals\\commands\\unkown.go",
+      "weight": 1
+    },
+    {
+      "from": "cmd\\cogito\\main.go",
+      "to": "internals\\utils\\welcomeUi\\welcomeUi.go",
+      "weight": 2
+    },
+    {
+      "from": "internals\\commands\\handleConfig.go",
+      "to": "internals\\config\\config.go",
+      "weight": 5
     }
   ],
   "flows": [
-    "CLI Pipeline: CLI Entry → InitDB → Install → BuildMap → HandleConfig → Help → Uninstall → Version → HandleHooks → ServeMcp → InitializeProjectSession → Unknown → ShowWelcomeUI → Load → GetAllMemories → BuildFinalPrompt",
-    "MCP Server Flow: MCP Request → ServeMcp",
-    "Memory Intelligence Flow: Session Lifecycle → handleSessionStart → handleSessionEnd → GetLatestSessionSummary → BuildFinalPrompt → CompleteSession"
+    "Graph-based flow construction enabled (v2.0)"
   ]
 }
