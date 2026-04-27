@@ -202,18 +202,28 @@ func BuildMap() {
 		}
 	}
 
+	groupedCalls := make(map[string][]string)
+	var callersOrdered []string
 	seenCalls := make(map[string]bool)
+
 	for _, f := range allFiles {
 		for _, call := range f.Calls {
-			// Only show project-internal calls to meaningful functions
 			if allFuncs[call.From] && allFuncs[call.To] && !isLowValueCall(call.To) {
 				key := call.From + ">" + call.To
 				if !seenCalls[key] {
-					sb.WriteString(key + "\n")
+					if _, exists := groupedCalls[call.From]; !exists {
+						callersOrdered = append(callersOrdered, call.From)
+					}
+					groupedCalls[call.From] = append(groupedCalls[call.From], call.To)
 					seenCalls[key] = true
 				}
 			}
 		}
+	}
+
+	for _, caller := range callersOrdered {
+		callees := groupedCalls[caller]
+		sb.WriteString(fmt.Sprintf("%s>%s\n", caller, strings.Join(callees, ",")))
 	}
 
 	os.MkdirAll(".cogito", os.ModePerm)
@@ -221,12 +231,14 @@ func BuildMap() {
 	fmt.Println("CRG Substrate v4.0 successfully created at .cogito/substrate.txt")
 }
 
+
 func findFile(files []FileMap, path string) *FileMap {
 	for i := range files {
 		if files[i].Path == path { return &files[i] }
 	}
 	return nil
 }
+
 
 func extractKeyFunctions(f *FileMap) []string {
 	var keys []string
