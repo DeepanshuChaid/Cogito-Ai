@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
+	// "strings"
 
-	"github.com/DeepanshuChaid/Cogito-Ai.git/internals/models/schemaModels"
+	// "github.com/DeepanshuChaid/Cogito-Ai.git/internals/models/schemaModels"
 	_ "modernc.org/sqlite"
 )
 
@@ -63,55 +63,65 @@ func InitDB() error {
     // 3. ONLY CREATE FTS IF IT DOESN'T EXIST (No more DROPPING every time)
     _, err = DB.Exec(`
         CREATE VIRTUAL TABLE IF NOT EXISTS observations_fts USING fts5(
-            title, compressed_text, facts, files_touched,
+            memory,
+            facts,
             content='observations',
             content_rowid='id'
         );
 
-        -- Use 'CREATE TRIGGER IF NOT EXISTS'
-        CREATE TRIGGER IF NOT EXISTS observations_ai AFTER INSERT ON observations
+        CREATE TRIGGER IF NOT EXISTS observations_ai
+        AFTER INSERT ON observations
         BEGIN
-            INSERT INTO observations_fts(rowid, title, compressed_text, facts, files_touched)
-            VALUES (new.id, new.title, new.compressed_text, new.facts, new.files_touched);
+            INSERT INTO observations_fts(
+                rowid,
+                memory,
+                facts
+            )
+            VALUES (
+                new.id,
+                new.memory,
+                new.facts
+            );
         END;
     `)
+
     return err
 }
 
-func GetAllMemories(cwd string, limit int) []schemaModels.Observation {
-	if DB == nil {
-		return nil
-	}
+// func GetAllMemories(cwd string, limit int) []schemaModels.Observation {
+// 	if DB == nil {
+// 		return nil
+// 	}
 
-	projectPath := filepath.Clean(strings.TrimSpace(cwd))
-	projectPathAlt := filepath.ToSlash(projectPath)
+// 	projectPath := filepath.Clean(strings.TrimSpace(cwd))
+// 	projectPathAlt := filepath.ToSlash(projectPath)
 
-	query := `
-		SELECT compressed_text, files_touched
-		FROM observations
-		WHERE project = ? OR project = ?
-		ORDER BY created_at DESC
-		LIMIT ?
-	`
+// 	query := `
+// 		SELECT compressed_text, files_touched
+// 		FROM observations
+// 		WHERE project = ? OR project = ?
+// 		ORDER BY created_at DESC
+// 		LIMIT ?
+// 	`
 
-	rows, err := DB.Query(query, projectPath, projectPathAlt, limit)
-	if err != nil {
-		return nil
-	}
-	defer rows.Close()
+// 	rows, err := DB.Query(query, projectPath, projectPathAlt, limit)
+// 	if err != nil {
+// 		return nil
+// 	}
+// 	defer rows.Close()
 
-	var observations []schemaModels.Observation
+// 	var observations []schemaModels.Observation
 
-	for rows.Next() {
-		var observation schemaModels.Observation
+// 	for rows.Next() {
+// 		var observation schemaModels.Observation
 
-		err := rows.Scan(&observation.CompressedText, &observation.FilesTouched)
-		if err != nil {
-			continue
-		}
+// 		err := rows.Scan(&observation.CompressedText, &observation.FilesTouched)
+// 		if err != nil {
+// 			continue
+// 		}
 
-		observations = append(observations, observation)
-	}
+// 		observations = append(observations, observation)
+// 	}
 
-	return observations
-}
+// 	return observations
+// }

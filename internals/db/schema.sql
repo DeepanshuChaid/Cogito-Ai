@@ -8,13 +8,13 @@ CREATE TABLE IF NOT EXISTS sdk_sessions (
 
 -- 2. PENDING_QUEUE (The "Waiting Room" for Distillation)
 -- This is crucial. Hooks write here instantly. Worker processes this async.
-CREATE TABLE IF NOT EXISTS pending_observations (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    session_id TEXT NOT NULL,
-    raw_input TEXT NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    processed BOOLEAN DEFAULT 0
-);
+--CREATE TABLE IF NOT EXISTS pending_observations (
+--    id INTEGER PRIMARY KEY AUTOINCREMENT,
+--    session_id TEXT NOT NULL,
+--    raw_input TEXT NOT NULL,
+--    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+--    processed BOOLEAN DEFAULT 0
+--);
 
 
 -- 3. OBSERVATIONS (The "Gold" - Distilled Memory)
@@ -23,12 +23,8 @@ CREATE TABLE IF NOT EXISTS observations (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     session_id TEXT NOT NULL,
     project TEXT NOT NULL,
-    obs_type TEXT,                           -- bugfix, decision, discovery
-    title TEXT,                              -- Short summary
-    compressed_text TEXT,                          -- The compressed memory
+    memory TEXT,                          -- The compressed memory
     facts TEXT,                              -- JSON array of pure facts
-    files_touched TEXT,                      -- JSON array of paths
-    discovery_tokens INTEGER DEFAULT 0,      -- ROI Tracking (Tier 3 lite)
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -48,21 +44,32 @@ CREATE TABLE IF NOT EXISTS session_summaries (
 -- 5. FTS5 VIRTUAL TABLE (The Search Engine - Tier 2)
 -- Mirrors observations for fast keyword search without loading full rows
 CREATE VIRTUAL TABLE IF NOT EXISTS observations_fts USING fts5(
-    title, compressed_text, facts, files_touched,
+    memory,
+    facts,
     content='observations',
     content_rowid='id'
 );
 
 -- Triggers to keep FTS in sync (Auto-update when observations change)
-CREATE TRIGGER IF NOT EXISTS observations_ai AFTER INSERT ON observations BEGIN
-  INSERT INTO observations_fts(rowid, title, compressed_text, facts, files_touched)
-  VALUES (new.id, new.title, new.compressed_text, new.facts, new.files_touched);
+CREATE TRIGGER IF NOT EXISTS observations_ai
+AFTER INSERT ON observations
+BEGIN
+    INSERT INTO observations_fts(
+        rowid,
+        memory,
+        facts
+    )
+    VALUES (
+        new.id,
+        new.memory,
+        new.facts
+    );
 END;
 
-CREATE TABLE IF NOT EXISTS projects (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT UNIQUE NOT NULL,       -- e.g., "Lair-Whiteboard"
-    root_path TEXT UNIQUE NOT NULL,  -- e.g., "/home/deepanshu/dev/lair"
-    tech_stack TEXT,                 -- e.g., "Go, Gin, Next.js"
-    last_accessed DATETIME DEFAULT CURRENT_TIMESTAMP
-);
+-- CREATE TABLE IF NOT EXISTS projects (
+--     id INTEGER PRIMARY KEY AUTOINCREMENT,
+--     name TEXT UNIQUE NOT NULL,       -- e.g., "Lair-Whiteboard"
+--     root_path TEXT UNIQUE NOT NULL,  -- e.g., "/home/deepanshu/dev/lair"
+--     tech_stack TEXT,                 -- e.g., "Go, Gin, Next.js"
+--     last_accessed DATETIME DEFAULT CURRENT_TIMESTAMP
+-- );

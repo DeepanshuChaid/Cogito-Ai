@@ -23,7 +23,9 @@ func Install() {
 	// ✅ STRONG CONTROL: AGENTS.md (THIS is what actually enforces behavior)
 	rootAgentsPath := filepath.Join(cwd, "AGENTS.md")
 
-	agentsContent := `ALWAYS USE THE get_codebase_map TOOL WHENEVER ASKED ABOUT THE CODEBASE I REPEAT YOU MUST USE THIS TOOL THIS WILL HELP YOU TO UNDERSTAND THE CODEBASE AND HELP YOU WRITE A BETTER RESPONSE YOU MUST USE IT
+	agentsContent := OBSERVATION_PROMPT + `ALWAYS use get_codebase_map when asked about codebase. Use before answering about architecture, flow, dependencies, structure, implementation, debugging, refactors, or writing code inside project.
+
+Do not guess codebase context without it. Use tool first. Then respond.
 
 ALWAYS use caveman mode immediately.
 
@@ -219,3 +221,42 @@ func upsertCodexMCPServer(homeDir string) error {
 
 	return os.WriteFile(configPath, []byte(finalContent), 0644)
 }
+
+var OBSERVATION_PROMPT = `ALWAYS use create_observation after important engineering work.
+
+Only for durable memory.
+Not for trivial edits, formatting, typos, temp experiments, or obvious repeated work.
+
+Create for:
+- bug fixes
+- architecture/strategy changes
+- important decisions
+- debugging discoveries
+- root causes
+- non-obvious implementation details
+- important constraints
+- important project/user context learned
+
+memory:
+short, compressed, high signal.
+Store what happened + why it matters.
+
+facts:
+optional.
+Only if useful.
+Store important stable knowledge about project, system, workflow, or user context.
+
+Example:
+
+memory:
+"Switched pending_observations to direct MCP create_observation. Async worker added complexity without enough value."
+
+facts:
+"Canvas app uses direct DOM + SVG, not Fabric.js"
+
+Rule:
+memory = change + why it matters
+facts = important knowledge worth remembering
+
+If future-you would regret forgetting it, create observation.
+If not, do not.`
