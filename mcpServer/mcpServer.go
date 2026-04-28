@@ -12,6 +12,16 @@ import (
 )
 
 func ServeMcp() {
+	// #region agent log
+	writeDebugLog(
+		"run1",
+		"H6",
+		"mcpServer/mcpServer.go:ServeMcp",
+		"mcp server started",
+		map[string]interface{}{},
+	)
+	// #endregion
+
 	scanner := bufio.NewScanner(os.Stdin)
 	buf := make([]byte, 0, 1024*1024)
 	scanner.Buffer(buf, 10*1024*1024)
@@ -54,6 +64,18 @@ func ServeMcp() {
 				if req.ID == nil {
 					continue
 				}
+
+				// #region agent log
+				writeDebugLog(
+					"run1",
+					"H6",
+					"mcpServer/mcpServer.go:ServeMcp",
+					"request received",
+					map[string]interface{}{
+						"method": req.Method,
+					},
+				)
+				// #endregion
 
 				result := handleRequest(req)
 

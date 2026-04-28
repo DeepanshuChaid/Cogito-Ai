@@ -18,9 +18,7 @@ func Install() {
 	// FOR EDGE CASE WE GONNA WRITE IT IN THE HOME DIR AS WELL
 	homeDir, _ := os.UserHomeDir()
 
-
-
-	// ✅ STRONG CONTROL: AGENTS.md (THIS is what actually enforces behavior)
+	// âœ… STRONG CONTROL: AGENTS.md (THIS is what actually enforces behavior)
 	rootAgentsPath := filepath.Join(cwd, "AGENTS.md")
 
 	agentsContent := OBSERVATION_PROMPT + `ALWAYS use get_codebase_map when asked about codebase. Use before answering about architecture, flow, dependencies, structure, implementation, debugging, refactors, or writing code inside project.
@@ -78,14 +76,14 @@ Never use:
 Forbidden examples:
 - Sure!
 - Of course
-- I’d be happy to help
+- Iâ€™d be happy to help
 - It seems like
 - You might want to
 - I think
 - probably
 - basically
 - actually
-- let’s
+- letâ€™s
 
 Bad:
 "Sure! I'd be happy to help with that."
@@ -95,7 +93,7 @@ Good:
 ---
 # Response Pattern
 Use:
-thing → problem → fix
+thing â†’ problem â†’ fix
 Example:
 JWT expires too early.
 Refresh token missing.
@@ -164,9 +162,9 @@ Only disable caveman mode if user explicitly says:
 
 	existing, err := os.ReadFile(rootAgentsPath)
 	if err != nil {
-		// file doesn't exist → create new
+		// file doesn't exist â†’ create new
 		os.WriteFile(rootAgentsPath, []byte(agentsContent), 0644)
-		fmt.Println("✅ Created root AGENTS.md")
+		fmt.Println("âœ… Created root AGENTS.md")
 	} else {
 		// append safely (avoid duplicates)
 		if !strings.Contains(string(existing), "skills/caveman") {
@@ -174,9 +172,9 @@ Only disable caveman mode if user explicitly says:
 			defer f.Close()
 
 			f.WriteString("\n" + agentsContent)
-			fmt.Println("✅ Appended to root AGENTS.md")
+			fmt.Println("âœ… Appended to root AGENTS.md")
 		} else {
-			fmt.Println("⚠️ AGENTS.md already contains caveman config, skipping")
+			fmt.Println("âš ï¸ AGENTS.md already contains caveman config, skipping")
 		}
 	}
 
@@ -184,12 +182,12 @@ Only disable caveman mode if user explicitly says:
 	skills.CreateSkills(cwd)
 
 	if err := upsertCodexMCPServer(homeDir); err != nil {
-		fmt.Println("❌ Failed to register MCP server in Codex config:", err)
+		fmt.Println("âŒ Failed to register MCP server in Codex config:", err)
 		return
 	}
 
-	fmt.Println("✅ MCP Server registered in ~/.codex/config.toml")
-	fmt.Println("📍 Codex will call: cogito serve-mcp")
+	fmt.Println("âœ… MCP Server registered in ~/.codex/config.toml")
+	fmt.Println("ðŸ“ Codex will call: cogito serve-mcp")
 }
 
 func upsertCodexMCPServer(homeDir string) error {
@@ -222,41 +220,26 @@ func upsertCodexMCPServer(homeDir string) error {
 	return os.WriteFile(configPath, []byte(finalContent), 0644)
 }
 
-var OBSERVATION_PROMPT = `ALWAYS use create_observation after important engineering work.
+var OBSERVATION_PROMPT = `create_observation only for real engineering changes.
 
-Only for durable memory.
-Not for trivial edits, formatting, typos, temp experiments, or obvious repeated work.
+ignore: formatting, typos, experiments, obvious edits.
 
-Create for:
-- bug fixes
-- architecture/strategy changes
-- important decisions
-- debugging discoveries
-- root causes
-- non-obvious implementation details
-- important constraints
-- important project/user context learned
+trigger: bugfix, architecture/strategy change, key decision, debug insight, root cause, non-obvious detail, critical constraint.
+
+style: caveman. short. direct. technical. no filler.
+memory max: 25 words.
+facts max: 10 words.
 
 memory:
-short, compressed, high signal.
-Store what happened + why it matters.
+what changed + impact.
 
-facts:
-optional.
-Only if useful.
-Store important stable knowledge about project, system, workflow, or user context.
+facts (optional):
+stable system/project/user facts only.
 
-Example:
+example:
+memory: "removed async worker, direct MCP flow, reduced overhead"
+facts: "canvas uses DOM + SVG not fabric.js"
 
-memory:
-"Switched pending_observations to direct MCP create_observation. Async worker added complexity without enough value."
-
-facts:
-"Canvas app uses direct DOM + SVG, not Fabric.js"
-
-Rule:
-memory = change + why it matters
-facts = important knowledge worth remembering
-
-If future-you would regret forgetting it, create observation.
-If not, do not.`
+rule:
+if it matters later -> create
+if not -> skip`
