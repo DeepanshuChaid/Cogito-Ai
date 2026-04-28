@@ -8,7 +8,6 @@ import (
 	"os/exec"
 	"regexp"
 	"strings"
-	"sync"
 	"time"
 )
 
@@ -141,14 +140,6 @@ func callModel(prompt string) (string, error) {
 
 	return result, nil
 }
-
-func cleanOutput(s string) string {
-	return strings.TrimSpace(s)
-}
-
-var debugLogMu sync.Mutex
-const debugLogPath = "C:\\Users\\HP\\Downloads\\CODING\\Cogito\\debug-2ed107.log"
-
 
 
 func newSessionID() string {
