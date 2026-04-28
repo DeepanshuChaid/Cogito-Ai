@@ -142,13 +142,13 @@ Prefer brevity over friendliness.
 Prefer clarity over politeness.
 Prefer action over explanation.
 
-Use this for commit messages:
+Always Use this for commit messages:
 @./skills/caveman-commit/SKILL.md
 
-Use this for code reviews:
+Always Use this for code reviews:
 @./skills/caveman-review/SKILL.md
 
-Use this for compression tasks:
+Always Use this for compression tasks:
 @./skills/caveman-compress/SKILL.md
 
 Only disable caveman mode if user explicitly says:

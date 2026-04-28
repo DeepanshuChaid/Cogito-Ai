@@ -5,7 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"os/signal"
+	"syscall"
 
+	"github.com/DeepanshuChaid/Cogito-Ai.git/internals/db"
 )
 
 
@@ -16,6 +19,24 @@ func ServeMcp() {
 	scanner.Buffer(buf, 10*1024*1024)
 
 	encoder := json.NewEncoder(os.Stdout)
+
+	signalChan := make(chan os.Signal, 1)
+
+	signal.Notify(
+		signalChan,
+		os.Interrupt,
+		syscall.SIGINT,
+		syscall.SIGTERM,
+	)
+
+	go func () {
+		<- signalChan
+
+		db.CompleteSession(currentSession.SessionID)
+
+		os.Exit(0)
+	}()
+
 
 	for scanner.Scan() {
 		var req JSONRPCRequest

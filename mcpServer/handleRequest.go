@@ -14,13 +14,6 @@ import (
 
 var currentSession *schemaModels.Session
 
-// 🔥 SHORT + AGGRESSIVE = WORKS
-const CAVEMAN_CORE = `
-Terse like caveman. Technical substance exact.
-No fluff. No filler. No pleasantries.
-Fragments OK. Short sentences.
-ALWAYS ACTIVE.
-`
 
 func handleRequest(req JSONRPCRequest) interface{} {
 
@@ -43,7 +36,6 @@ func handleRequest(req JSONRPCRequest) interface{} {
 
 		// go commands.BuildMap()
 
-		injectionPrompt := CAVEMAN_CORE
 
 		return map[string]interface{}{
 			"protocolVersion": "2025-06-18",
@@ -59,9 +51,6 @@ func handleRequest(req JSONRPCRequest) interface{} {
 				"name":    "cogito",
 				"version": "0.1.0",
 			},
-
-			// 🔥 SYSTEM-LEVEL INJECTION
-			"instructions": injectionPrompt,
 		}
 
 	//==============================================
@@ -124,7 +113,7 @@ func handleRequest(req JSONRPCRequest) interface{} {
 						"role": "system",
 						"content": map[string]interface{}{
 							"type": "text",
-							"text": CAVEMAN_CORE + "\n\n" + PROMPT + "\n\n" + lore,
+							"text": PROMPT + "\n\n" + lore,
 						},
 					},
 				},
@@ -150,7 +139,7 @@ func handleRequest(req JSONRPCRequest) interface{} {
 
 			code = trimInput(code)
 
-			prompt := CAVEMAN_CORE + "\n\n" + PROMPT + "\n\nCODE:\n" + code
+			prompt := PROMPT + "\n\nCODE:\n" + code
 
 			result, err := runCaveman(prompt)
 			if err != nil {

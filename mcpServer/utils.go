@@ -86,7 +86,6 @@ func runCaveman(prompt string) (string, error) {
 			return out, nil
 		} else {
 			prompt = fmt.Sprintf(`
-%s
 
 %s
 
@@ -104,7 +103,7 @@ STRICT RULES:
 - Output INVALID if rules broken
 
 Return corrected lines only.
-`, CAVEMAN_CORE, PROMPT, err, out)
+`, PROMPT, err, out)
 
 			output = out
 		}

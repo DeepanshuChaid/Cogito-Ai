@@ -182,7 +182,7 @@ func printSummaries(db *sql.DB) {
 	fmt.Println("\n📝 [SESSION_SUMMARIES]")
 	rows, err := db.Query(`
 		SELECT id,
-		       memory_session_id,
+		       session_id,
 		       project,
 		       request,
 		       learned,
@@ -198,7 +198,7 @@ func printSummaries(db *sql.DB) {
 	defer rows.Close()
 
 	header := fmt.Sprintf("%-4s | %-20s | %-30s | %-30s | %-30s | %-30s | %-20s",
-		"ID", "MemSID", "Project", "Request", "Learned", "NextSteps", "CreatedAt")
+		"ID", "SessionId", "Project", "Request", "Learned", "NextSteps", "CreatedAt")
 	fmt.Println(header)
 	fmt.Println(strings.Repeat("-", 150))
 

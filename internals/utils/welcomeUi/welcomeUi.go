@@ -4,28 +4,12 @@ import (
 	"fmt"
 
 	"github.com/charmbracelet/lipgloss"
-	"github.com/DeepanshuChaid/Cogito-Ai.git/internals/config"
 )
 
 func ShowWelcomeUI() {
-	// Load config
-	cfg, _ := config.Load()
-
-	mode := "Not configured"
-	status := "Inactive"
-
-	if cfg != nil {
-		mode = fmt.Sprintf("%v", cfg.Intensity)
-		if cfg.Enabled {
-			status = "Active"
-		}
-	}
-
-	// 🎨 Exact color palette
-	mint := lipgloss.Color("#9FDBA1") // ✅ your exact color
-	text := lipgloss.Color("#EDEDED")
-	muted := lipgloss.Color("#eee") // subtle gray
-	success := lipgloss.Color("#22C55E")
+	// Palette
+	mint := lipgloss.Color("#9FDBA1")
+	muted := lipgloss.Color("#eee")
 
 	// ===== Banner =====
 	banner := `
@@ -47,53 +31,47 @@ func ShowWelcomeUI() {
 		Foreground(muted).
 		Render("Token Optimizer for AI CLI")
 
-	// Status
-	statusColor := muted
-	if status == "Active" {
-		statusColor = success
-	}
-
-	statusLine := lipgloss.NewStyle().
-		Foreground(statusColor).
-		Render("● " + status)
-
-	modeLine := lipgloss.NewStyle().
-		Foreground(text).
-		Render("Mode: " + mode)
-
-	info := lipgloss.JoinVertical(
-		lipgloss.Left,
-		statusLine,
-		modeLine,
-	)
-
-	// Commands
+	// Command arrow
 	arrow := lipgloss.NewStyle().
 		Foreground(mint).
 		Render("▸")
 
 	cmd := func(label, desc string) string {
 		return fmt.Sprintf(
-			"%s %-18s %s",
+			"%s %-22s %s",
 			arrow,
 			label,
-			lipgloss.NewStyle().Foreground(muted).Render(desc),
+			lipgloss.NewStyle().
+				Foreground(muted).
+				Render(desc),
 		)
 	}
 
+	// Main commands
 	commands := lipgloss.JoinVertical(
 		lipgloss.Left,
-		cmd("cogito install", "setup hooks"),
-		cmd("cogito config", "configure modes"),
-		cmd("cogito uninstall", "remove hooks"),
-		cmd("cogito --help", "show help"),
+		cmd("cogito install", "setup and configure Cogito"),
+		cmd("cogito build-map", "generate codebase substrate map"),
+		cmd("cogito uninstall", "remove Cogito and cleanup"),
+		cmd("cogito --help", "show help information"),
+		cmd("cogito -v", "show current version"),
+	)
+
+	// Internal/testing commands
+	internal := lipgloss.JoinVertical(
+		lipgloss.Left,
+		cmd("cogito serve-mcp", "internal MCP stdio server"),
 	)
 
 	divider := lipgloss.NewStyle().
 		Foreground(muted).
-		Render("────────────────────────────")
+		Render("────────────────────────────────────────")
 
-	// Final Box
+	note := lipgloss.NewStyle().
+		Foreground(muted).
+		Render("serve-mcp is for Codex/Claude MCP integration, not normal terminal use")
+
+	// Final box
 	box := lipgloss.NewStyle().
 		Border(lipgloss.RoundedBorder()).
 		BorderForeground(muted).
@@ -106,9 +84,14 @@ func ShowWelcomeUI() {
 				subtitle,
 				"",
 				divider,
-				info,
 				"",
 				commands,
+				"",
+				divider,
+				"Internal / Testing",
+				internal,
+				"",
+				note,
 			),
 		)
 
