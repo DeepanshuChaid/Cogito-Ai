@@ -62,16 +62,24 @@ func handleRequest(req JSONRPCRequest) interface{} {
 		return map[string]interface{}{
 			"tools": []map[string]interface{}{
 				{
-					"name":        "caveman_review",
-					"description": "Ultra strict compressed code review",
+					"name": "create_observation",
+					"description": "Store one durable engineering memory from an important activity, decision, discovery, or bugfix",
+
 					"inputSchema": map[string]interface{}{
 						"type": "object",
 						"properties": map[string]interface{}{
-							"code": map[string]interface{}{
+							"memory": map[string]interface{}{
 								"type": "string",
+								"description": "Compressed durable summary of what happened and why it matters",
+							},
+							"facts": map[string]interface{}{
+								"type": "string",
+								"description": "JSON array of pure factual points for retrieval",
 							},
 						},
-						"required": []string{"code"},
+						"required": []string{
+							"memory",
+						},
 					},
 				},
 				{
@@ -126,29 +134,39 @@ func handleRequest(req JSONRPCRequest) interface{} {
 	case "tools/call":
 		name, _ := req.Params["name"].(string)
 
-		if name == "caveman_review" {
+		if name == "create_observation" {
 			arg, ok := req.Params["arguments"].(map[string]interface{})
 			if !ok {
 				return errorResponse(-32602, "arguments missing")
 			}
 
-			code, ok := arg["code"].(string)
-			if !ok {
-				return errorResponse(-32602, "code missing")
+			memoryText, ok := arg["memory"].(string)
+			if !ok || memoryText == "" {
+				return errorResponse(-32602, "memoryText missing")
 			}
 
-			code = trimInput(code)
+			var fact string
+			fact, _ = arg["facts"].(string)
 
-			prompt := PROMPT + "\n\nCODE:\n" + code
+			cwd, _ := os.Getwd()
 
-			result, err := runCaveman(prompt)
+			if currentSession == nil {
+				return errorResponse(-32602, "no active session")
+			}
+
+			err := db.CreateObservation(currentSession.SessionID, cwd, memoryText, fact)
 			if err != nil {
 				return errorResponse(-32603, err.Error())
 			}
 
+			// importance := 5
+			// if val, ok := arg["importance"].(float64); ok {
+			// 	importance = int(val)
+			// }
+
 			return map[string]interface{}{
 				"content": []map[string]interface{}{
-					{"type": "text", "text": cleanOutput(result)},
+					{"type": "text", "text": "Observations Saved Successfully!"},
 				},
 			}
 		}
