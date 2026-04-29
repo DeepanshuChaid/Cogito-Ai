@@ -59,34 +59,35 @@
 26 e30
 
 @edges
-0>7:1c
-0>6:1c
-0>22:1c
-21>24:7c
-3>10:1c
-3>2:1c
-7>19:1c
-21>3:1c
-22>21:1c
 0>13:1c
 0>3:1c
-0>8:1c
+0>11:1c
+0>22:1c
 3>4:3c
 7>8:1c
+21>24:7c
 21>14:1c
-22>16:1c
-0>11:1c
-0>9:1c
+0>6:1c
 0>20:1c
+3>10:1c
 5>12:5r
+0>7:1c
+0>8:1c
+22>14:2c
+22>21:1c
+0>9:1c
+3>2:1c
+7>19:1c
 21>16:1c
+21>3:1c
+22>16:1c
 
 @why
 
 @flows
 MCP: 21>24
-MCP: 22>21>24
-CLI: 0>13
+CLI: 0>6
+MCP: 22>14
 
 @function_calls
 main>InitDB,Install,BuildMap,Help,Uninstall,Version,ServeMcp,Unknown,ShowWelcomeUI,resetDatabase,printSessions,printObservations,printSummaries
@@ -113,7 +114,7 @@ LoadForDir>GetConfigPathForDir,defaultConfig,IsValid
 InitDB>resolveDBPath
 IsDuplicateObservation>normalizeMeaningText,writeObservationDebugLog,GetRecentObservations,jaccardSimilarity
 handleRequest>newSessionID,InitializeProjectSession,errorResponse,CreateObservation,BuildMap
-ServeMcp>CompleteSession,handleRequest
+ServeMcp>IsDuplicateObservation,CreateObservation,CompleteSession,handleRequest
 runCaveman>callModel,validateOutput
 printSessions>trim
 printObservations>trim

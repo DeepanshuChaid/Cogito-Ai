@@ -41,6 +41,12 @@ func ServeMcp() {
 		select {
 			case <- stopChan:
 				if currentSession != nil {
+					if !observationCreatedThisSession {
+						memory := "Session ended without explicit durable observation. Capture migration-impact changes next time."
+						if dup, _, _, err := db.IsDuplicateObservation(currentSession.Project, memory, "", 20); err == nil && !dup {
+							_ = db.CreateObservation(currentSession.SessionID, currentSession.Project, memory, "")
+						}
+					}
 					_ = db.CompleteSession(currentSession.SessionID)
 				}
 				return // EXITS THE FUNCTIONS & STOPS THE PROCESS CLEANLY

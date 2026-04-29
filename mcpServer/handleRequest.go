@@ -13,6 +13,7 @@ import (
 
 
 var currentSession *schemaModels.Session
+var observationCreatedThisSession bool
 
 
 func handleRequest(req JSONRPCRequest) interface{} {
@@ -28,6 +29,7 @@ func handleRequest(req JSONRPCRequest) interface{} {
 		session, err := db.InitializeProjectSession(uniqueID, cwd)
 		if err == nil {
 			currentSession = session
+			observationCreatedThisSession = false
 		}
 
 		// go func() {
@@ -158,6 +160,7 @@ func handleRequest(req JSONRPCRequest) interface{} {
 			if err != nil {
 				return errorResponse(-32603, err.Error())
 			}
+			observationCreatedThisSession = true
 
 			// importance := 5
 			// if val, ok := arg["importance"].(float64); ok {

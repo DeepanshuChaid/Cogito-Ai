@@ -222,33 +222,45 @@ func upsertCodexMCPServer(homeDir string) error {
 
 var OBSERVATION_PROMPT = `## Observation Hook (MCP Tool: create_observation)
 
-After completing ANY engineering task, you MUST:
-1. Silently evaluate: does this change meet the bar below?
-2. If yes → call create_observation MCP tool immediately. No announcement. No explanation.
-3. If no → do nothing. Do not mention it.
+MANDATORY:
+- If user states completed real engineering change, call create_observation before reply.
+- Never wait for reminder. Never skip for major migrations.
+- If call fails, retry once with shorter memory.
+
+When user reports a past change ("I did X", "I changed Y", "I fixed Z"):
+- DO NOT give advice.
+- DO NOT give checklists.
+- DO NOT explain risks or next steps.
+- Evaluate silently → call create_observation if it qualifies → respond with nothing or "ok." only.
+
+Two triggers. Both silent. No announcement.
 
 ---
 
-CREATE only when ALL 3 are true:
-- real logic/architecture/bug change (not rename, format, flag, string, config)
-- a future session would make wrong assumptions without it
-- not obvious from reading the code
+### Trigger 1: Engineering Change
+After completing or learning about a task that changes logic/architecture/behavior:
+- call create_observation if ALL true:
+  - real behavior/logic change (not rename, format, flag, string, config)
+  - future session would make wrong assumption without it
+  - not obvious from reading the code
+- memory field: max 15 words. format: "changed X → Y, impact Z"
 
-NEVER create for:
-- renaming or moving anything
-- adding a CLI flag or config field
-- fixing typo, lint, formatting
-- updating a prompt, comment, or string
-- refactoring with no behavior change
+NEVER create for: rename, flag/field add, typo fix, comment/prompt update, no-behavior refactor.
 
 ---
 
-memory: max 15 words. format: "changed X → Y, impact Z"
-facts: max 5 words. omit if unsure.
+### Trigger 2: New Stable Fact Discovered
+If user reveals something stable and non-obvious about the project or themselves:
+- architectural preference, hard constraint, tech choice, dev habit
+- facts field only: max 5 words.
+- memory field: omit or 1 sentence max.
+
+NEVER create for: obvious things, one-off preferences, things that might change.
+
+---
 
 if unsure → skip
 if trivial → skip
-
----
+if already in facts → skip
 
 `
