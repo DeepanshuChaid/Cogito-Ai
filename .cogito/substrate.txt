@@ -44,10 +44,10 @@
 11 u43 !Version
 12 s99 !GetConfigPath,GetConfigPathForDir,Load,LoadForDir,Save,IsValid
 13 p63 !InitDB
-14 p99 !IsDuplicateObservation,CreateObservation,GetRecentObservations,GetSessionObservations,SearchObservationsFTS,GetObservationByID
+14 p99 !IsDuplicateObservation,CreateObservation,GetRecentObservations,GetRecentObservationsExcludingSession,GetSessionObservations,SearchObservationsFTS,GetObservationByID
 15 p25
 16 p96 !InitializeProjectSession,UpdateMemorySessionID,CompleteSession
-17 p99 !CreateSessionSummary
+17 p99 !CreateSessionSummary,GetRecentSessionSummaries,GetRecentSessionSummariesExcludingSession
 18 p40
 19 u32 !CreateSkills
 20 u43 !ShowWelcomeUI
@@ -59,41 +59,40 @@
 26 e30
 
 @edges
-24>17:3c
-0>7:1c
-0>14:1c
-0>17:1c
-3>4:3c
-3>2:1c
-21>16:1c
-22>21:1c
+0>9:1c
+7>8:1c
 0>13:1c
+5>12:5r
+7>19:1c
+21>24:17c
+21>3:1c
+22>24:1c
+22>16:1c
+22>21:1c
 0>8:1c
 0>22:1c
 0>20:1c
-3>10:1c
-21>24:10c
-21>17:1c
-22>16:1c
-0>6:1c
-5>12:5r
-7>19:1c
-7>8:1c
-21>14:1c
-22>14:2c
-22>24:1c
+3>4:3c
+3>2:1c
+21>17:4c
+24>17:2c
 0>3:1c
+0>6:1c
 0>11:1c
-0>9:1c
-21>3:1c
+0>17:1c
+3>10:1c
+21>16:1c
+21>14:5c
 24>14:1c
+0>7:1c
+0>14:1c
 
 @why
 
 @flows
+MCP: 22>24>17
 MCP: 21>24>17
-MCP: 22>14
-CLI: 0>7>19
+CLI: 0>13
 
 @function_calls
 main>InitDB,Install,BuildMap,Help,Uninstall,Version,ServeMcp,GetRecentObservations,CreateSessionSummary,Unknown,ShowWelcomeUI,resetDatabase,printSessions,printObservations,printSummaries
@@ -118,11 +117,11 @@ GetConfigPathForDir>GetConfigPath
 Load>LoadForDir
 LoadForDir>GetConfigPathForDir,defaultConfig,IsValid
 InitDB>resolveDBPath
-IsDuplicateObservation>normalizeMeaningText,writeObservationDebugLog,GetRecentObservations,jaccardSimilarity
-handleRequest>newSessionID,InitializeProjectSession,errorResponse,CreateObservation,BuildMap,CreateSessionSummary
-ServeMcp>IsDuplicateObservation,CreateObservation,GenerateAutoSummary,CompleteSession,handleRequest
+IsDuplicateObservation>normalizeMeaningText,GetRecentObservations,jaccardSimilarity
+handleRequest>newSessionID,InitializeProjectSession,GetRecentObservationsExcludingSession,GetRecentSessionSummariesExcludingSession,toJSONString,errorResponse,CreateObservation,BuildMap,GetSessionObservations,CreateSessionSummary,GetRecentObservations,GetRecentSessionSummaries
+ServeMcp>GenerateAutoSummary,CompleteSession,handleRequest
 runCaveman>callModel,validateOutput
-GenerateAutoSummary>GetSessionObservations,CreateSessionSummary,callModel
+GenerateAutoSummary>GetSessionObservations,callModel,CreateSessionSummary
 printSessions>trim
 printObservations>trim
 printSummaries>trim
